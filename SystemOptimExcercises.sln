@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.808.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemOptimExcercises", "SystemOptimExcercises\SystemOptimExcercises.csproj", "{47F44417-8D97-4B87-B47E-444DCDA7BA4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExerciseWeekOne", "SystemOptimExcercises\ExerciseWeekOne.csproj", "{47F44417-8D97-4B87-B47E-444DCDA7BA4D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|anycpu = Release|anycpu
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Debug|anycpu.ActiveCfg = Debug|anycpu
-		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Debug|anycpu.Build.0 = Debug|anycpu
-		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Release|anycpu.ActiveCfg = Release|anycpu
-		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Release|anycpu.Build.0 = Release|anycpu
+		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Release|anycpu.ActiveCfg = Debug|Any CPU
+		{47F44417-8D97-4B87-B47E-444DCDA7BA4D}.Release|anycpu.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
