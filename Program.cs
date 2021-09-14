@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace exercise
 {
@@ -67,6 +68,33 @@ namespace exercise
                 map.Add(task, mCPs[mCPNum].GetCores()[coreNum]);
             }
         }
+
+        public static void swap (Dictionary<Task, Core> map) {
+            var random = new Random();
+            int first = 0, second = 0;
+            while (first == second || map.ElementAt(first).Value.Equals(map.ElementAt(second).Value)) {first = random.Next(0, map.Count); second = random.Next(0, map.Count);}
+            //Console.WriteLine("Swapping " + first + " and " + second);
+            var temp = map.ElementAt(first);
+            map[map.ElementAt(first).Key] = map.ElementAt(second).Value;
+            map[map.ElementAt(second).Key] = temp.Value;
+        }
+        public static bool DM_guarantee(Dictionary<Task, Core> map) {
+            int R, i = 0;
+            foreach (var mapping in map) {
+                i++;
+                int I = 0;
+                do {
+                    R = I + mapping.Key.getWCET();
+                    if (R > mapping.Key.getDeadline()) return false;
+                    for (int j = 0; j < i; j++) {
+                        I+= (int)Math.Ceiling((decimal)R/mapping.Key.getPeriod())* map.ElementAt(j).Key.getWCET();
+                    }
+                } while (I + mapping.Key.getWCET() > R);
+            }
+            
+            return true;
+        }
+
         static void Main(string[] args)
         {
             /** Load data  **/
@@ -101,11 +129,15 @@ namespace exercise
             }
             
 
+            /** Are the tasks schelulable EDF D/P <= 1 EDF**/
+            /** FP RTA **/
+
             /** Solve **/
             randomAssign(map, mcps, tasks);
-            foreach ( var entry in map) {
-                Console.WriteLine("Task id " + entry.Key.getId()  + " mcp id " + entry.Value.getMcp() + " core id " + entry.Value.getId());
-            }
+            while (!DM_guarantee(map)) swap(map);
+
+            foreach (var entry in map)
+                Console.WriteLine("Task id " + entry.Key.getId() + " mcp id " + entry.Value.getMcp() + " core id " + entry.Value.getId());
         }
     }
 }
