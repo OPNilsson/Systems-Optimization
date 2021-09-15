@@ -53,55 +53,90 @@ namespace exercise
         public int getId() {
             return id;
         }
-        public List<Core> GetCores() {
+        public List<Core> getCores() {
             return cores;
         }
     }
 
     class Program
     {
-        public static void randomAssign(Dictionary<Task, Core> map, List<MCP> mCPs, List<Task> tasks) {
+        public static void randomAssign(Dictionary<Core, List<Task>> map, List<MCP> mCPs, List<Task> tasks) {
             foreach (var task in tasks) {
                 var random = new Random();
                 int mCPNum = random.Next(0, mCPs.Count);
-                int coreNum = random.Next(0, mCPs[mCPNum].GetCores().Count);
-                map.Add(task, mCPs[mCPNum].GetCores()[coreNum]);
+                int coreNum = random.Next(0, mCPs[mCPNum].getCores().Count);
+                List<Task> mappedTasks;
+                if (!map.TryGetValue(mCPs[mCPNum].getCores()[coreNum], out mappedTasks)) {
+                    map.Add(mCPs[mCPNum].getCores()[coreNum], new List<Task>{task});
+                }else {
+                    mappedTasks.Add(task);
+                }
             }
         }
 
-        public static void swap (Dictionary<Task, Core> map) {
+        public static void swap (Dictionary<Core, List<Task>> map, List<MCP> mcps) {
             var random = new Random();
-            int first = 0, second = 0;
-            while (first == second || map.ElementAt(first).Value.Equals(map.ElementAt(second).Value)) {first = random.Next(0, map.Count); second = random.Next(0, map.Count);}
-            //Console.WriteLine("Swapping " + first + " and " + second);
-            var temp = map.ElementAt(first);
-            map[map.ElementAt(first).Key] = map.ElementAt(second).Value;
-            map[map.ElementAt(second).Key] = temp.Value;
+            List<Task> tasks;
+            do {
+                tasks = map.ElementAt(random.Next(map.Count)).Value;
+            } while (tasks.Count <= 0);
+            Task task = tasks[random.Next(tasks.Count)];
+
+            int mcpsNum = random.Next(0, mcps.Count);
+            Core newCore;
+
+            //while (first == second || map.ElementAt(first).Value.Equals(map.ElementAt(second).Value)) {first = random.Next(0, map.Count); second = random.Next(0, map.Count);}
+            do {
+                newCore = mcps[mcpsNum].getCores()[random.Next( mcps[mcpsNum].getCores().Count)];
+            } while (map[newCore].Contains(task));
+            tasks.Remove(task);
+            //Console.WriteLine("Changing task {0} from core {0}, to {0}" ,map.ElementAt(task).Key.getId(), map.ElementAt(task).Value.getId(), mcps[mcpsNum].getCores()[core].getId());
+            map[newCore].Add(task);
         }
-        public static bool DM_guarantee(Dictionary<Task, Core> map) {
-            int R, i = 0;
+        public static bool DM_guarantee(Dictionary<Core, List<Task>> map) {
+            int R, Ci;
             foreach (var mapping in map) {
-                i++;
-                int I = 0;
+                for (int i = 0; i < mapping.Value.Count; i++) {
+                    int I = 0;
+                    do {
+                        Ci = (int)(mapping.Value[i].getWCET() * mapping.Key.getWCETFactor());
+                        R = I + Ci;
+                        if (R > mapping.Value[i].getDeadline()) return false;
+                        I = 0;
+                        for (int j = 0; j < i; j++) {
+                            decimal rTemp = (decimal)R/(decimal)mapping.Value[j].getPeriod();
+                            int Cj = (int)(mapping.Value[j].getWCET() * mapping.Key.getWCETFactor());
+                            I+= (int)Math.Ceiling(rTemp) * Cj;
+                        }
+                    } while (I + Ci > R);
+
+                    
+                }
+            }
+
+                
+                /*
                 do {
-                    R = I + mapping.Key.getWCET();
+                    R = I + (int)(mapping.Key.getWCET() * mapping.Value.getWCETFactor());
                     if (R > mapping.Key.getDeadline()) return false;
+                    I = 0;
                     for (int j = 0; j < i; j++) {
-                        I+= (int)Math.Ceiling((decimal)R/mapping.Key.getPeriod())* map.ElementAt(j).Key.getWCET();
+                        if (!mapping.Value.Equals(map.ElementAt(j).Value)) continue;
+                        decimal rTemp = (decimal)R/(decimal)mapping.Key.getPeriod();
+                        I+= (int)Math.Ceiling(rTemp) * (int)(map.ElementAt(j).Key.getWCET() * mapping.Value.getWCETFactor());
                     }
                 } while (I + mapping.Key.getWCET() > R);
             }
-            
+            */
             return true;
         }
 
         static void Main(string[] args)
         {
             /** Load data  **/
-            var map = new Dictionary<Task, Core>();
             XmlDocument doc = new XmlDocument();
             
-            doc.Load("Week_37-exercise\\test_cases\\small.xml");
+            doc.Load("Week_37-exercise\\test_cases\\medium.xml");
             List<Task> tasks = new List<Task>();
             tasks.Clear();
             var nodes = doc.SelectNodes("//Application");
@@ -129,15 +164,24 @@ namespace exercise
             }
             
 
-            /** Are the tasks schelulable EDF D/P <= 1 EDF**/
-            /** FP RTA **/
-
             /** Solve **/
+            var map = new Dictionary<Core, List<Task>>();
             randomAssign(map, mcps, tasks);
-            while (!DM_guarantee(map)) swap(map);
+            int iter = 0;
+            
+            while (!DM_guarantee(map)) {
+                iter++;
+                swap(map, mcps);
+            }
 
+            //TODO hill climbing optimization
+
+            /** Print solution **/
             foreach (var entry in map)
-                Console.WriteLine("Task id " + entry.Key.getId() + " mcp id " + entry.Value.getMcp() + " core id " + entry.Value.getId());
+                foreach (var task in entry.Value) {
+                                    Console.WriteLine("Task id " + task.getId() + " mcp id " + entry.Key.getMcp() + " core id " + entry.Key.getId());
+
+                }
         }
     }
 }
