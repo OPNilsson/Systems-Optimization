@@ -1,0 +1,285 @@
+<Model>
+  <Application>
+    <Task Deadline="80000" Id="26" Period="80000" WCET="3661" />
+    <Task Deadline="40000" Id="27" Period="40000" WCET="52" />
+    <Task Deadline="80000" Id="28" Period="80000" WCET="555" />
+    <Task Deadline="80000" Id="29" Period="80000" WCET="1219" />
+    <Task Deadline="80000" Id="30" Period="80000" WCET="412" />
+    <Task Deadline="10000" Id="31" Period="10000" WCET="18" />
+    <Task Deadline="5000" Id="32" Period="5000" WCET="49" />
+    <Task Deadline="10000" Id="33" Period="10000" WCET="204" />
+    <Task Deadline="5000" Id="34" Period="5000" WCET="50" />
+    <Task Deadline="80000" Id="35" Period="80000" WCET="3635" />
+    <Task Deadline="80000" Id="36" Period="80000" WCET="74" />
+    <Task Deadline="80000" Id="37" Period="80000" WCET="523" />
+    <Task Deadline="10000" Id="38" Period="10000" WCET="49" />
+    <Task Deadline="5000" Id="39" Period="5000" WCET="18" />
+    <Task Deadline="5000" Id="40" Period="5000" WCET="23" />
+    <Task Deadline="10000" Id="41" Period="10000" WCET="946" />
+    <Task Deadline="80000" Id="42" Period="80000" WCET="3338" />
+    <Task Deadline="80000" Id="43" Period="80000" WCET="538" />
+    <Task Deadline="5000" Id="44" Period="5000" WCET="32" />
+    <Task Deadline="80000" Id="45" Period="80000" WCET="698" />
+    <Task Deadline="5000" Id="46" Period="5000" WCET="152" />
+    <Task Deadline="5000" Id="47" Period="5000" WCET="65" />
+    <Task Deadline="10000" Id="48" Period="10000" WCET="98" />
+    <Task Deadline="80000" Id="49" Period="80000" WCET="1720" />
+    <Task Deadline="80000" Id="50" Period="80000" WCET="3109" />
+    <Task Deadline="80000" Id="51" Period="80000" WCET="1154" />
+    <Task Deadline="80000" Id="52" Period="80000" WCET="1944" />
+    <Task Deadline="80000" Id="53" Period="80000" WCET="303" />
+    <Task Deadline="10000" Id="54" Period="10000" WCET="209" />
+    <Task Deadline="20000" Id="55" Period="20000" WCET="27" />
+    <Task Deadline="80000" Id="56" Period="80000" WCET="513" />
+    <Task Deadline="40000" Id="57" Period="40000" WCET="42" />
+    <Task Deadline="10000" Id="58" Period="10000" WCET="142" />
+    <Task Deadline="80000" Id="59" Period="80000" WCET="3200" />
+    <Task Deadline="40000" Id="60" Period="40000" WCET="2569" />
+    <Task Deadline="80000" Id="61" Period="80000" WCET="33" />
+    <Task Deadline="10000" Id="62" Period="10000" WCET="11" />
+    <Task Deadline="20000" Id="63" Period="20000" WCET="300" />
+    <Task Deadline="20000" Id="64" Period="20000" WCET="442" />
+    <Task Deadline="40000" Id="65" Period="40000" WCET="1983" />
+    <Task Deadline="80000" Id="66" Period="80000" WCET="792" />
+    <Task Deadline="10000" Id="67" Period="10000" WCET="116" />
+    <Task Deadline="20000" Id="68" Period="20000" WCET="710" />
+    <Task Deadline="80000" Id="69" Period="80000" WCET="368" />
+    <Task Deadline="80000" Id="70" Period="80000" WCET="82" />
+    <Task Deadline="40000" Id="71" Period="40000" WCET="2053" />
+    <Task Deadline="5000" Id="72" Period="5000" WCET="71" />
+    <Task Deadline="10000" Id="73" Period="10000" WCET="20" />
+    <Task Deadline="10000" Id="74" Period="10000" WCET="394" />
+    <Task Deadline="40000" Id="75" Period="40000" WCET="482" />
+    <Task Deadline="10000" Id="76" Period="10000" WCET="48" />
+    <Task Deadline="10000" Id="77" Period="10000" WCET="532" />
+    <Task Deadline="10000" Id="78" Period="10000" WCET="42" />
+    <Task Deadline="40000" Id="79" Period="40000" WCET="909" />
+    <Task Deadline="5000" Id="80" Period="5000" WCET="187" />
+    <Task Deadline="80000" Id="81" Period="80000" WCET="831" />
+    <Task Deadline="80000" Id="82" Period="80000" WCET="1723" />
+    <Task Deadline="40000" Id="83" Period="40000" WCET="784" />
+    <Task Deadline="5000" Id="84" Period="5000" WCET="108" />
+    <Task Deadline="40000" Id="85" Period="40000" WCET="876" />
+    <Task Deadline="10000" Id="86" Period="10000" WCET="87" />
+    <Task Deadline="80000" Id="87" Period="80000" WCET="490" />
+    <Task Deadline="10000" Id="88" Period="10000" WCET="451" />
+    <Task Deadline="5000" Id="102" Period="5000" WCET="6" />
+    <Task Deadline="5000" Id="90" Period="5000" WCET="21" />
+    <Task Deadline="5000" Id="91" Period="5000" WCET="54" />
+    <Task Deadline="5000" Id="94" Period="5000" WCET="15" />
+    <Task Deadline="5000" Id="95" Period="5000" WCET="8" />
+    <Task Deadline="5000" Id="96" Period="5000" WCET="8" />
+    <Task Deadline="20000" Id="100" Period="20000" WCET="73" />
+    <Task Deadline="20000" Id="103" Period="20000" WCET="50" />
+    <Task Deadline="20000" Id="92" Period="20000" WCET="1015" />
+    <Task Deadline="20000" Id="97" Period="20000" WCET="414" />
+    <Task Deadline="10000" Id="101" Period="10000" WCET="177" />
+    <Task Deadline="10000" Id="93" Period="10000" WCET="107" />
+    <Task Deadline="10000" Id="98" Period="10000" WCET="32" />
+    <Task Deadline="10000" Id="99" Period="10000" WCET="74" />
+    <Task Deadline="10000" Id="104" Period="10000" WCET="436" />
+    <Task Deadline="20000" Id="105" Period="20000" WCET="172" />
+    <Task Deadline="80000" Id="106" Period="80000" WCET="3257" />
+    <Task Deadline="20000" Id="107" Period="20000" WCET="2345" />
+    <Task Deadline="80000" Id="108" Period="80000" WCET="40" />
+    <Task Deadline="10000" Id="109" Period="10000" WCET="390" />
+    <Task Deadline="80000" Id="110" Period="80000" WCET="1295" />
+    <Task Deadline="10000" Id="111" Period="10000" WCET="102" />
+    <Task Deadline="40000" Id="112" Period="40000" WCET="3450" />
+    <Task Deadline="80000" Id="113" Period="80000" WCET="1437" />
+    <Task Deadline="80000" Id="114" Period="80000" WCET="6431" />
+    <Task Deadline="40000" Id="115" Period="40000" WCET="2474" />
+    <Task Deadline="20000" Id="116" Period="20000" WCET="2357" />
+    <Task Deadline="10000" Id="117" Period="10000" WCET="123" />
+    <Task Deadline="80000" Id="118" Period="80000" WCET="618" />
+    <Task Deadline="80000" Id="119" Period="80000" WCET="945" />
+    <Task Deadline="80000" Id="120" Period="80000" WCET="2572" />
+    <Task Deadline="10000" Id="121" Period="10000" WCET="67" />
+    <Task Deadline="40000" Id="122" Period="40000" WCET="393" />
+    <Task Deadline="40000" Id="123" Period="40000" WCET="89" />
+    <Task Deadline="40000" Id="124" Period="40000" WCET="25" />
+    <Task Deadline="40000" Id="125" Period="40000" WCET="100" />
+    <Task Deadline="40000" Id="126" Period="40000" WCET="145" />
+    <Task Deadline="40000" Id="127" Period="40000" WCET="145" />
+    <Task Deadline="80000" Id="140" Period="80000" WCET="16944" />
+    <Task Deadline="80000" Id="144" Period="80000" WCET="14934" />
+    <Task Deadline="80000" Id="145" Period="80000" WCET="16475" />
+    <Task Deadline="80000" Id="146" Period="80000" WCET="22350" />
+    <Task Deadline="20000" Id="132" Period="20000" WCET="1188" />
+    <Task Deadline="20000" Id="139" Period="20000" WCET="344" />
+    <Task Deadline="20000" Id="142" Period="20000" WCET="157" />
+    <Task Deadline="20000" Id="143" Period="20000" WCET="738" />
+    <Task Deadline="20000" Id="148" Period="20000" WCET="196" />
+    <Task Deadline="20000" Id="150" Period="20000" WCET="378" />
+    <Task Deadline="20000" Id="128" Period="20000" WCET="2471" />
+    <Task Deadline="10000" Id="130" Period="10000" WCET="206" />
+    <Task Deadline="10000" Id="138" Period="10000" WCET="1786" />
+    <Task Deadline="10000" Id="147" Period="10000" WCET="1447" />
+    <Task Deadline="10000" Id="149" Period="10000" WCET="455" />
+    <Task Deadline="80000" Id="129" Period="80000" WCET="628" />
+    <Task Deadline="80000" Id="131" Period="80000" WCET="2060" />
+    <Task Deadline="80000" Id="133" Period="80000" WCET="13751" />
+    <Task Deadline="80000" Id="134" Period="80000" WCET="8973" />
+    <Task Deadline="80000" Id="135" Period="80000" WCET="21756" />
+    <Task Deadline="80000" Id="136" Period="80000" WCET="4024" />
+    <Task Deadline="80000" Id="137" Period="80000" WCET="20811" />
+    <Task Deadline="80000" Id="141" Period="80000" WCET="7766" />
+    <Task Deadline="20000" Id="3" Period="40000" WCET="4" />
+    <Task Deadline="15200" Id="13" Period="40000" WCET="6" />
+    <Task Deadline="10000" Id="177" Period="10000" WCET="275" />
+    <Task Deadline="80000" Id="178" Period="80000" WCET="2905" />
+    <Task Deadline="80000" Id="179" Period="80000" WCET="710" />
+    <Task Deadline="80000" Id="180" Period="80000" WCET="130" />
+    <Task Deadline="10000" Id="181" Period="10000" WCET="53" />
+    <Task Deadline="10000" Id="182" Period="10000" WCET="295" />
+    <Task Deadline="40000" Id="183" Period="40000" WCET="241" />
+    <Task Deadline="80000" Id="184" Period="80000" WCET="1665" />
+    <Task Deadline="80000" Id="185" Period="80000" WCET="46" />
+    <Task Deadline="80000" Id="186" Period="80000" WCET="527" />
+    <Task Deadline="40000" Id="187" Period="40000" WCET="1885" />
+    <Task Deadline="80000" Id="188" Period="80000" WCET="249" />
+    <Task Deadline="80000" Id="189" Period="80000" WCET="2287" />
+    <Task Deadline="10000" Id="190" Period="10000" WCET="48" />
+    <Task Deadline="40000" Id="191" Period="40000" WCET="1397" />
+    <Task Deadline="10000" Id="192" Period="10000" WCET="862" />
+    <Task Deadline="80000" Id="193" Period="80000" WCET="478" />
+    <Task Deadline="80000" Id="194" Period="80000" WCET="1254" />
+    <Task Deadline="80000" Id="195" Period="80000" WCET="6003" />
+    <Task Deadline="80000" Id="196" Period="80000" WCET="3158" />
+    <Task Deadline="80000" Id="197" Period="80000" WCET="1192" />
+    <Task Deadline="80000" Id="198" Period="80000" WCET="1214" />
+    <Task Deadline="40000" Id="199" Period="40000" WCET="1333" />
+    <Task Deadline="10000" Id="200" Period="10000" WCET="100" />
+    <Task Deadline="80000" Id="201" Period="80000" WCET="3181" />
+    <Task Deadline="80000" Id="202" Period="80000" WCET="2178" />
+    <Task Deadline="80000" Id="204" Period="80000" WCET="352" />
+    <Task Deadline="40000" Id="205" Period="40000" WCET="59" />
+    <Task Deadline="80000" Id="206" Period="80000" WCET="753" />
+    <Task Deadline="80000" Id="207" Period="80000" WCET="336" />
+    <Task Deadline="80000" Id="208" Period="80000" WCET="145" />
+    <Task Deadline="80000" Id="209" Period="80000" WCET="2710" />
+    <Task Deadline="80000" Id="210" Period="80000" WCET="2878" />
+    <Task Deadline="40000" Id="211" Period="40000" WCET="1454" />
+    <Task Deadline="80000" Id="212" Period="80000" WCET="4425" />
+    <Task Deadline="40000" Id="213" Period="40000" WCET="87" />
+    <Task Deadline="5000" Id="214" Period="5000" WCET="45" />
+    <Task Deadline="10000" Id="215" Period="10000" WCET="89" />
+    <Task Deadline="40000" Id="216" Period="40000" WCET="26" />
+    <Task Deadline="40000" Id="217" Period="40000" WCET="464" />
+    <Task Deadline="10000" Id="218" Period="10000" WCET="44" />
+    <Task Deadline="5000" Id="219" Period="5000" WCET="11" />
+    <Task Deadline="40000" Id="220" Period="40000" WCET="273" />
+    <Task Deadline="20000" Id="221" Period="20000" WCET="368" />
+    <Task Deadline="80000" Id="222" Period="80000" WCET="1553" />
+    <Task Deadline="80000" Id="223" Period="80000" WCET="141" />
+    <Task Deadline="10000" Id="224" Period="10000" WCET="130" />
+    <Task Deadline="10000" Id="225" Period="10000" WCET="309" />
+    <Task Deadline="10000" Id="226" Period="10000" WCET="213" />
+    <Task Deadline="10000" Id="227" Period="10000" WCET="237" />
+    <Task Deadline="40000" Id="228" Period="40000" WCET="454" />
+    <Task Deadline="10000" Id="229" Period="10000" WCET="9" />
+    <Task Deadline="80000" Id="230" Period="80000" WCET="363" />
+    <Task Deadline="80000" Id="231" Period="80000" WCET="3387" />
+    <Task Deadline="80000" Id="232" Period="80000" WCET="271" />
+    <Task Deadline="10000" Id="233" Period="10000" WCET="685" />
+    <Task Deadline="80000" Id="234" Period="80000" WCET="2179" />
+    <Task Deadline="5000" Id="235" Period="5000" WCET="9" />
+    <Task Deadline="40000" Id="236" Period="40000" WCET="258" />
+    <Task Deadline="40000" Id="237" Period="40000" WCET="694" />
+    <Task Deadline="20000" Id="239" Period="20000" WCET="312" />
+    <Task Deadline="80000" Id="240" Period="80000" WCET="920" />
+    <Task Deadline="5000" Id="241" Period="5000" WCET="46" />
+    <Task Deadline="10000" Id="242" Period="10000" WCET="7" />
+    <Task Deadline="5000" Id="244" Period="5000" WCET="18" />
+    <Task Deadline="5000" Id="249" Period="5000" WCET="64" />
+    <Task Deadline="5000" Id="250" Period="5000" WCET="5" />
+    <Task Deadline="10000" Id="251" Period="10000" WCET="188" />
+    <Task Deadline="5000" Id="252" Period="5000" WCET="12" />
+    <Task Deadline="5000" Id="253" Period="5000" WCET="16" />
+    <Task Deadline="40000" Id="243" Period="40000" WCET="730" />
+    <Task Deadline="20000" Id="245" Period="20000" WCET="461" />
+    <Task Deadline="20000" Id="246" Period="20000" WCET="80" />
+    <Task Deadline="20000" Id="247" Period="20000" WCET="394" />
+    <Task Deadline="20000" Id="248" Period="20000" WCET="330" />
+    <Task Deadline="20000" Id="254" Period="20000" WCET="118" />
+    <Task Deadline="10000" Id="255" Period="10000" WCET="263" />
+    <Task Deadline="80000" Id="256" Period="80000" WCET="2630" />
+    <Task Deadline="10000" Id="257" Period="10000" WCET="689" />
+    <Task Deadline="40000" Id="258" Period="40000" WCET="464" />
+    <Task Deadline="20000" Id="259" Period="20000" WCET="1112" />
+    <Task Deadline="40000" Id="260" Period="40000" WCET="1198" />
+    <Task Deadline="80000" Id="261" Period="80000" WCET="1907" />
+    <Task Deadline="80000" Id="262" Period="80000" WCET="1748" />
+    <Task Deadline="10000" Id="263" Period="10000" WCET="533" />
+    <Task Deadline="40000" Id="264" Period="40000" WCET="2386" />
+    <Task Deadline="10000" Id="265" Period="10000" WCET="23" />
+    <Task Deadline="10000" Id="266" Period="10000" WCET="529" />
+    <Task Deadline="80000" Id="267" Period="80000" WCET="14803" />
+    <Task Deadline="10000" Id="268" Period="10000" WCET="245" />
+    <Task Deadline="40000" Id="269" Period="40000" WCET="1957" />
+    <Task Deadline="10000" Id="270" Period="10000" WCET="16" />
+    <Task Deadline="10000" Id="271" Period="10000" WCET="35" />
+    <Task Deadline="40000" Id="272" Period="40000" WCET="334" />
+    <Task Deadline="10000" Id="275" Period="10000" WCET="42" />
+    <Task Deadline="40000" Id="273" Period="40000" WCET="6" />
+    <Task Deadline="40000" Id="274" Period="40000" WCET="68" />
+    <Task Deadline="40000" Id="276" Period="40000" WCET="277" />
+    <Task Deadline="40000" Id="277" Period="40000" WCET="203" />
+    <Task Deadline="40000" Id="278" Period="40000" WCET="175" />
+    <Task Deadline="80000" Id="287" Period="80000" WCET="4304" />
+    <Task Deadline="80000" Id="289" Period="80000" WCET="17725" />
+    <Task Deadline="80000" Id="296" Period="80000" WCET="2925" />
+    <Task Deadline="80000" Id="299" Period="80000" WCET="24462" />
+    <Task Deadline="80000" Id="300" Period="80000" WCET="3527" />
+    <Task Deadline="20000" Id="283" Period="20000" WCET="106" />
+    <Task Deadline="20000" Id="285" Period="20000" WCET="878" />
+    <Task Deadline="20000" Id="290" Period="20000" WCET="319" />
+    <Task Deadline="20000" Id="292" Period="20000" WCET="247" />
+    <Task Deadline="20000" Id="294" Period="20000" WCET="1108" />
+    <Task Deadline="20000" Id="301" Period="20000" WCET="305" />
+    <Task Deadline="20000" Id="280" Period="20000" WCET="5379" />
+    <Task Deadline="10000" Id="291" Period="10000" WCET="1480" />
+    <Task Deadline="20000" Id="293" Period="20000" WCET="300" />
+    <Task Deadline="20000" Id="295" Period="20000" WCET="2655" />
+    <Task Deadline="20000" Id="297" Period="20000" WCET="2464" />
+    <Task Deadline="20000" Id="298" Period="20000" WCET="648" />
+    <Task Deadline="80000" Id="279" Period="80000" WCET="3594" />
+    <Task Deadline="80000" Id="281" Period="80000" WCET="5664" />
+    <Task Deadline="80000" Id="282" Period="80000" WCET="2820" />
+    <Task Deadline="80000" Id="284" Period="80000" WCET="38721" />
+    <Task Deadline="80000" Id="286" Period="80000" WCET="26673" />
+    <Task Deadline="80000" Id="288" Period="80000" WCET="1173" />
+  </Application>
+  <Platform>
+	  <MCP Id="0">
+	    <Core Id="0" WCETFactor="1.5" />
+	    <Core Id="1" WCETFactor="0.9" />
+	    <Core Id="2" WCETFactor="1.4" />
+	  </MCP>
+	  <MCP Id="1">
+	    <Core Id="0" WCETFactor="1.3" />
+	    <Core Id="1" WCETFactor="1.5" />
+	  </MCP>
+	  <MCP Id="2">
+	    <Core Id="0" WCETFactor="1.4" />
+	    <Core Id="1" WCETFactor="1.1" />
+	    <Core Id="2" WCETFactor="0.5" />
+	    <Core Id="3" WCETFactor="0.7" />
+	  </MCP>
+	  <MCP Id="3">
+	    <Core Id="0" WCETFactor="0.7" />
+	    <Core Id="1" WCETFactor="0.9" />
+	    <Core Id="2" WCETFactor="0.7" />
+	  </MCP>
+	  <MCP Id="4">
+	    <Core Id="0" WCETFactor="1.3" />
+	    <Core Id="1" WCETFactor="0.5" />
+	  </MCP>
+	  <MCP Id="5">
+	    <Core Id="0" WCETFactor="0.9" />
+	    <Core Id="1" WCETFactor="1.4" />
+	    <Core Id="2" WCETFactor="1.4" />
+	    <Core Id="3" WCETFactor="1.3" />
+	  </MCP>
+  </Platform>
+</Model>

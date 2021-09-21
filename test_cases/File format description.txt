@@ -1,0 +1,19 @@
+The input is given as an XML file (see the examples in this folder) in a human-readable format. You may use any libraries to parse these inputs into your program.
+
+For each task we know its Deadline, Period and worst-case execution time (WCET), given in microseconds, and its identifier Id, given as attributes in a "Task" element. Example:
+
+<Application>
+  <Task Deadline="40000" Id="0" Period="40000" WCET="84"/>
+
+Each multicore processor (MCP) is modeled using a "MCP" element. For each core of a multicore processor we know their ID and a their performance captured by a "WCETFactor". When you assign a task to a core then you need to multiply its WCET with this WCETFactor. For example, a task with a WCET of 100 microseconds will execute in 50 microseconds on a core with a WCETFactor of 0.5 and in 200 microseconds on a core with a WCETFactor of 2.
+
+<Platform>
+  <MCP Id="0">
+    <Core Id="0" WCETFactor="1.1" />
+
+The solution to the problem is an assignment of task to cores in the format of solutionFormat.xml. The task Id must correspond to the one given in the input file, and the MCP and Core attributes must correspond to a MCP/core in the problem. The WCRT is the worst-case response time of a task and needs to be reported in microseconds. Example:
+
+<Solution>
+    <Task Id="0" MCP="0" Core="0" WCRT="1234"/>
+
+Clarification: The exercise slides mention "affinity constraints" that need to be satisfied. You can disregard those.
