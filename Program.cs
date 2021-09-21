@@ -30,6 +30,12 @@ namespace exercise
             this.WCETFactor = WCETFactor;
         }
 
+        public Core (Core core) {
+            this.mcp = core.mcp;
+            this.id = core.id;
+            this.WCETFactor = core.WCETFactor;
+        }
+
         public int getId() {
             return id;
         }
@@ -74,24 +80,30 @@ namespace exercise
             }
         }
 
-        public static void swap (Dictionary<Core, List<Task>> map, List<MCP> mcps) {
+        public static Dictionary<Core, List<Task>> generateSolution (Dictionary<Core, List<Task>> map, List<MCP> mcps) {
             var random = new Random();
+            Dictionary<Core, List<Task>> mapP = new Dictionary<Core, List<Task>>();
+
+            foreach (var entry in map) {
+                mapP.Add(entry.Key, new List<Task>(entry.Value));
+            }
+
             List<Task> tasks;
             do {
-                tasks = map.ElementAt(random.Next(map.Count)).Value;
+                tasks = mapP.ElementAt(random.Next(mapP.Count)).Value;
             } while (tasks.Count <= 0);
             Task task = tasks[random.Next(tasks.Count)];
 
             int mcpsNum = random.Next(0, mcps.Count);
             Core newCore;
 
-            //while (first == second || map.ElementAt(first).Value.Equals(map.ElementAt(second).Value)) {first = random.Next(0, map.Count); second = random.Next(0, map.Count);}
             do {
                 newCore = mcps[mcpsNum].getCores()[random.Next( mcps[mcpsNum].getCores().Count)];
-            } while (map[newCore].Contains(task));
+            } while (mapP[newCore].Contains(task));
             tasks.Remove(task);
-            //Console.WriteLine("Changing task {0} from core {0}, to {0}" ,map.ElementAt(task).Key.getId(), map.ElementAt(task).Value.getId(), mcps[mcpsNum].getCores()[core].getId());
-            map[newCore].Add(task);
+            mapP[newCore].Add(task);
+
+            return mapP;
         }
         public static bool DM_guarantee(Dictionary<Core, List<Task>> map) {
             int R, Ci;
@@ -113,22 +125,55 @@ namespace exercise
                     
                 }
             }
-
-                
-                /*
-                do {
-                    R = I + (int)(mapping.Key.getWCET() * mapping.Value.getWCETFactor());
-                    if (R > mapping.Key.getDeadline()) return false;
-                    I = 0;
-                    for (int j = 0; j < i; j++) {
-                        if (!mapping.Value.Equals(map.ElementAt(j).Value)) continue;
-                        decimal rTemp = (decimal)R/(decimal)mapping.Key.getPeriod();
-                        I+= (int)Math.Ceiling(rTemp) * (int)(map.ElementAt(j).Key.getWCET() * mapping.Value.getWCETFactor());
-                    }
-                } while (I + mapping.Key.getWCET() > R);
-            }
-            */
             return true;
+        }
+
+        public static Dictionary<Core, List<Task>> compare_basic_criteria(Dictionary<Core, List<Task>> map, Dictionary<Core, List<Task>> mapP) {
+            int t1 = 0;
+            int R, Ci;
+            bool addt = true;
+            foreach (var mapping in map) {
+                for (int i = 0; i < mapping.Value.Count; i++) {
+                    int I = 0;
+                    do {
+                        Ci = (int)(mapping.Value[i].getWCET() * mapping.Key.getWCETFactor());
+                        R = I + Ci;
+                        if (R > mapping.Value[i].getDeadline()) {addt = false; break;}
+                        I = 0;
+                        for (int j = 0; j < i; j++) {
+                            decimal rTemp = (decimal)R/(decimal)mapping.Value[j].getPeriod();
+                            int Cj = (int)(mapping.Value[j].getWCET() * mapping.Key.getWCETFactor());
+                            I+= (int)Math.Ceiling(rTemp) * Cj;
+                        }
+                    } while (I + Ci > R);
+
+                    if (addt == true ) t1++;
+                    addt = true;
+                }
+            }
+            int t2 = 0;
+            addt = true;
+            foreach (var mapping in mapP) {
+                for (int i = 0; i < mapping.Value.Count; i++) {
+                    int I = 0;
+                    do {
+                        Ci = (int)(mapping.Value[i].getWCET() * mapping.Key.getWCETFactor());
+                        R = I + Ci;
+                        if (R > mapping.Value[i].getDeadline()) {addt = false; break;}
+                        I = 0;
+                        for (int j = 0; j < i; j++) {
+                            decimal rTemp = (decimal)R/(decimal)mapping.Value[j].getPeriod();
+                            int Cj = (int)(mapping.Value[j].getWCET() * mapping.Key.getWCETFactor());
+                            I+= (int)Math.Ceiling(rTemp) * Cj;
+                        }
+                    } while (I + Ci > R);
+
+                    if (addt == true ) t2++;
+                    addt = true;
+                }
+            }
+
+            return t1 >= t2 ? map : mapP;
         }
 
         static void Main(string[] args)
@@ -136,7 +181,7 @@ namespace exercise
             /** Load data  **/
             XmlDocument doc = new XmlDocument();
             
-            doc.Load("Week_37-exercise\\test_cases\\medium.xml");
+            doc.Load("Week_37-exercise\\test_cases\\Large.xml");
             List<Task> tasks = new List<Task>();
             tasks.Clear();
             var nodes = doc.SelectNodes("//Application");
@@ -169,18 +214,20 @@ namespace exercise
             randomAssign(map, mcps, tasks);
             int iter = 0;
             
-            while (!DM_guarantee(map)) {
+             do {
                 iter++;
-                swap(map, mcps);
-            }
+                var mapP = generateSolution(map, mcps);
+                if (compare_basic_criteria(map, mapP) == mapP) map = mapP;
+
+            } while (!DM_guarantee(map));
 
             //TODO hill climbing optimization
 
             /** Print solution **/
+            Console.WriteLine("Run for {0} iterations", iter);
             foreach (var entry in map)
                 foreach (var task in entry.Value) {
-                                    Console.WriteLine("Task id " + task.getId() + " mcp id " + entry.Key.getMcp() + " core id " + entry.Key.getId());
-
+                    Console.WriteLine("Task id " + task.getId() + " mcp id " + entry.Key.getMcp() + " core id " + entry.Key.getId());
                 }
         }
     }
