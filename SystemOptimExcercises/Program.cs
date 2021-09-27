@@ -132,8 +132,20 @@ namespace exercise
 
             return mapP;
         }
+
+        /**
+         * Response Time Analysis
+         * 
+         *  Calculates the response time R for each task.
+         * 
+         *  Then checks if response time is smaller than the deadline of the task to see if the task is schedulable.
+         *  
+         *  returns true | false if all tasks are schedulable 
+         * 
+         */
         public static bool DM_guarantee(Dictionary<Core, List<Task>> map)
         {
+            // R response time for the core for each task
             int R, Ci;
             foreach (var mapping in map)
             {
@@ -141,7 +153,7 @@ namespace exercise
                 {
                     int I = 0;
                     do
-                    {
+                    { 
                         Ci = (int)(mapping.Value[i].getWCET() * mapping.Key.getWCETFactor());
                         R = I + Ci;
                         if (R > mapping.Value[i].getDeadline()) return false;
@@ -217,14 +229,48 @@ namespace exercise
             return t1 >= t2 ? map : mapP;
         }
 
+        public static int calculateLaxity(Dictionary<Core, List<Task>> map)
+        {
+            int totalLaxity = 0;
+
+            foreach (var mapping in map)
+            {
+                for (int i = 0; i < mapping.Value.Count; i++)
+                {
+
+                    int laxity = (int)(mapping.Value[i].getDeadline() - mapping.Value[i].getWCET());
+
+                    totalLaxity = totalLaxity + laxity;
+                }
+            
+            
+            }
+
+            return totalLaxity;
+        }
+
+        public static double acceptingProbability(int laxity, int adjLaxity, double temperature)
+        {
+            if (adjLaxity < laxity)
+                return 1.0;
+            else
+                return Math.Exp((laxity - adjLaxity) / temperature);
+        }
+
         static void Main(string[] args)
         {
-            /** Load data  **/
+            
             XmlDocument doc = new XmlDocument();
-
             doc.Load("../XML/medium.xml");
+
             List<Task> tasks = new List<Task>();
+            List<MCP> mcps = new List<MCP>();
+            List<Core> cores = new List<Core>();
+
             tasks.Clear();
+            mcps.Clear();
+            cores.Clear();
+
             var nodes = doc.SelectNodes("//Application");
             foreach (XmlNode node in nodes)
             {
@@ -233,10 +279,7 @@ namespace exercise
                     tasks.Add(new Task(int.Parse(aNode.Attributes["Id"].Value), int.Parse(aNode.Attributes["Deadline"].Value), int.Parse(aNode.Attributes["Period"].Value), int.Parse(aNode.Attributes["WCET"].Value)));
 
             }
-            List<MCP> mcps = new List<MCP>();
-            List<Core> cores = new List<Core>();
-            mcps.Clear();
-            cores.Clear();
+
             nodes = doc.SelectNodes("//Platform");
             foreach (XmlNode node in nodes)
             {
@@ -251,25 +294,87 @@ namespace exercise
                 }
             }
 
-
-            /** Solve **/
             var map = new Dictionary<Core, List<Task>>();
             randomAssign(map, mcps, tasks);
-            int iter = 0;
 
-            do
+            
+
+            
+            // Find intial solution
+            //do
+            //{
+            //    var mapP = generateSolution(map, mcps); // Randomly Assigns tasks to cores
+            //    if (compare_basic_criteria(map, mapP) == mapP) map = mapP;  // Check if changing task to a new space results in an increase in scheduable tasks.
+
+            //} while (!DM_guarantee(map));
+
+
+            Console.WriteLine("Finding Initial Solution");
+            while (true)
             {
-                iter++;
-                var mapP = generateSolution(map, mcps);
-                if (compare_basic_criteria(map, mapP) == mapP) map = mapP;
+                var tempSolution = generateSolution(map, mcps);
 
-            } while (!DM_guarantee(map));
+                if (DM_guarantee(tempSolution))
+                {
+                    map = tempSolution;
+                    break;
+                }
+            }
+            Console.WriteLine("Initial Solution FOUND!");
 
-            //TODO hill climbing optimization
+            // Exit Parameters for the Simulated Annealing
+            int MAX_ITERATIONS = 100000;
+            double MIN_TEMPERATURE = 0.0001;
+
+            int iteration = 0;
+            double temperature = 1000.0; // As suggested in the lecture slides
+            double coolingRate = 0.995; // A better cooling rate might be needed
+
+            Dictionary<Core, List<Task>> bestSolution = map;
+            int bestLaxity = calculateLaxity(map);
+            int laxity = bestLaxity;
+
+            var random = new Random();
+
+            // Simulated Annealing Loop
+            while (iteration < MAX_ITERATIONS && temperature > MIN_TEMPERATURE)
+            {
+                // Adds a buffering effect to know if computing
+                if (iteration % 155 == 0) { Console.Clear(); Console.WriteLine(iteration); }
+
+                // Create new solution
+                var tempSolution = generateSolution(map, mcps); // Random solution needs to be influenced by the current
+
+                // If all tasks meet deadline then it's a solution
+                if (DM_guarantee(tempSolution))
+                {
+                    // Compute laxity of adjacent state.
+                    int laxityNeighbor = calculateLaxity(tempSolution);
+
+                    // Check if new solution is new best.
+                    if (laxityNeighbor < bestLaxity)
+                    {
+                        bestSolution = tempSolution;
+                        bestLaxity = laxity;
+                    }
+
+                    // If neighbor solution is better, accept solution with varying probability.
+                    double p = random.NextDouble();
+                    if (acceptingProbability(laxity, laxityNeighbor, temperature) > p)
+                    {
+                        map = tempSolution;
+                        laxity = laxityNeighbor;
+                    }
+
+                    // End Iteration by cooling
+                    temperature = temperature * coolingRate;
+                    ++iteration;
+                }
+            }
 
             /** Print solution **/
-            Console.WriteLine("Run for {0} iterations", iter);
-            foreach (var entry in map)
+            Console.WriteLine("Ran for {0} iterations", iteration);
+            foreach (var entry in bestSolution)
                 foreach (var task in entry.Value)
                 {
                     Console.WriteLine("Task id " + task.getId() + " mcp id " + entry.Key.getMcp() + " core id " + entry.Key.getId());
