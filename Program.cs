@@ -67,16 +67,16 @@ namespace exercise
     class Program
     {
         public static void randomAssign(Dictionary<Core, List<Task>> map, List<MCP> mCPs, List<Task> tasks) {
+            foreach (var mCP in mCPs) {
+                foreach (var core in mCP.getCores()) {
+                    map.Add(core, new List<Task>());
+                }
+            }
             foreach (var task in tasks) {
                 var random = new Random();
                 int mCPNum = random.Next(0, mCPs.Count);
                 int coreNum = random.Next(0, mCPs[mCPNum].getCores().Count);
-                List<Task> mappedTasks;
-                if (!map.TryGetValue(mCPs[mCPNum].getCores()[coreNum], out mappedTasks)) {
-                    map.Add(mCPs[mCPNum].getCores()[coreNum], new List<Task>{task});
-                }else {
-                    mappedTasks.Add(task);
-                }
+                map[mCPs[mCPNum].getCores()[coreNum]].Add(task);
             }
         }
 
@@ -128,7 +128,7 @@ namespace exercise
             return true;
         }
 
-        public static Dictionary<Core, List<Task>> compare_basic_criteria(Dictionary<Core, List<Task>> map, Dictionary<Core, List<Task>> mapP) {
+        public static Dictionary<Core, List<Task>> compare_basic_criteria(Dictionary<Core, List<Task>> map, Dictionary<Core, List<Task>> mapP, ulong iteration, int temp) {
             int t1 = 0;
             int R, Ci;
             bool addt = true;
@@ -173,7 +173,16 @@ namespace exercise
                 }
             }
 
-            return t1 >= t2 ? map : mapP;
+            if (t1 < t2) return mapP;
+
+            double diff = t1 - t2;
+            double t = temp / (float)(iteration + 1);
+            double metropolis = Math.Exp(-diff/t);
+            Random rand = new Random();
+            if (diff < 0 || rand.NextDouble() < metropolis) {
+                return mapP;
+            }
+            return map;
         }
 
         static void Main(string[] args)
@@ -181,7 +190,7 @@ namespace exercise
             /** Load data  **/
             XmlDocument doc = new XmlDocument();
             
-            doc.Load("Week_37-exercise\\test_cases\\Large.xml");
+            doc.Load("Week_37-exercise\\test_cases\\large.xml");
             List<Task> tasks = new List<Task>();
             tasks.Clear();
             var nodes = doc.SelectNodes("//Application");
@@ -212,12 +221,12 @@ namespace exercise
             /** Solve **/
             var map = new Dictionary<Core, List<Task>>();
             randomAssign(map, mcps, tasks);
-            int iter = 0;
-            
+            ulong iter = 0;
+            int temp = 10;
              do {
                 iter++;
                 var mapP = generateSolution(map, mcps);
-                if (compare_basic_criteria(map, mapP) == mapP) map = mapP;
+                if (compare_basic_criteria(map, mapP, iter, temp) == mapP) map = mapP;
 
             } while (!DM_guarantee(map));
 
