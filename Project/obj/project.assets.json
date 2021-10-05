@@ -1,0 +1,569 @@
+{
+  "version": 3,
+  "targets": {
+    "net5.0": {
+      "Google.OrTools/9.1.9490": {
+        "type": "package",
+        "dependencies": {
+          "Google.OrTools.runtime.linux-x64": "9.1.9490",
+          "Google.OrTools.runtime.osx-x64": "9.1.9490",
+          "Google.OrTools.runtime.win-x64": "9.1.9490",
+          "Google.Protobuf": "3.18.0"
+        },
+        "compile": {
+          "lib/net5.0/Google.OrTools.dll": {}
+        },
+        "runtime": {
+          "lib/net5.0/Google.OrTools.dll": {}
+        }
+      },
+      "Google.OrTools.runtime.linux-x64/9.1.9490": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/google-ortools-native.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/linux-x64/native/libortools.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          }
+        }
+      },
+      "Google.OrTools.runtime.osx-x64/9.1.9490": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/osx-x64/native/google-ortools-native.dylib": {
+            "assetType": "native",
+            "rid": "osx-x64"
+          },
+          "runtimes/osx-x64/native/libortools.dylib": {
+            "assetType": "native",
+            "rid": "osx-x64"
+          }
+        }
+      },
+      "Google.OrTools.runtime.win-x64/9.1.9490": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/win-x64/native/absl_bad_any_cast_impl.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_bad_optional_access.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_bad_variant_access.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_base.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_city.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_civil_time.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_cord.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_debugging_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_demangle_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_examine_stack.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_exponential_biased.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_failure_signal_handler.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_commandlineflag.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_commandlineflag_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_config.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_marshalling.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_parse.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_private_handle_accessor.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_program_name.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_reflection.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_usage.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_flags_usage_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_graphcycles_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_hash.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_hashtablez_sampler.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_int128.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_leak_check.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_leak_check_disable.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_log_severity.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_malloc_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_periodic_sampler.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_distributions.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_distribution_test_util.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_platform.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_pool_urbg.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_randen.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_randen_hwaes.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_randen_hwaes_impl.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_randen_slow.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_internal_seed_material.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_seed_gen_exception.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_random_seed_sequences.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_raw_hash_set.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_raw_logging_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_scoped_set_env.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_spinlock_wait.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_stacktrace.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_status.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_statusor.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_str_format_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_strerror.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_strings.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_strings_internal.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_symbolize.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_synchronization.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_throw_delegate.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_time.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_time_zone.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/absl_wyhash.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/google-ortools-native.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/libprotobuf-lite.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/libprotobuf.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/libprotoc.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/libscip.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/ortools.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x64/native/zlib.lib": {
+            "assetType": "native",
+            "rid": "win-x64"
+          }
+        }
+      },
+      "Google.Protobuf/3.18.0": {
+        "type": "package",
+        "compile": {
+          "lib/net5.0/Google.Protobuf.dll": {}
+        },
+        "runtime": {
+          "lib/net5.0/Google.Protobuf.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Google.OrTools/9.1.9490": {
+      "sha512": "gEcf7+AFybLYi6O/aP+kPwg4kA2ZzlwDEdOpbEu+927OSnidXNLRZurUD2ftuIcsbHv9YWWUzHHRkPld3/q3gw==",
+      "type": "package",
+      "path": "google.ortools/9.1.9490",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/bop/bop_parameters.proto",
+        "content/constraint_solver/assignment.proto",
+        "content/constraint_solver/demon_profiler.proto",
+        "content/constraint_solver/routing_enums.proto",
+        "content/constraint_solver/routing_parameters.proto",
+        "content/constraint_solver/search_limit.proto",
+        "content/constraint_solver/search_stats.proto",
+        "content/constraint_solver/solver_parameters.proto",
+        "content/glop/parameters.proto",
+        "content/graph/flow_problem.proto",
+        "content/linear_solver/linear_solver.proto",
+        "content/orLogo.png",
+        "content/sat/boolean_problem.proto",
+        "content/sat/cp_model.proto",
+        "content/sat/cp_model_service.proto",
+        "content/sat/sat_parameters.proto",
+        "content/util/optional_boolean.proto",
+        "google.ortools.9.1.9490.nupkg.sha512",
+        "google.ortools.nuspec",
+        "lib/net452/Google.OrTools.dll",
+        "lib/net452/Google.OrTools.xml",
+        "lib/net5.0/Google.OrTools.dll",
+        "lib/net5.0/Google.OrTools.xml",
+        "lib/netcoreapp3.1/Google.OrTools.dll",
+        "lib/netcoreapp3.1/Google.OrTools.xml"
+      ]
+    },
+    "Google.OrTools.runtime.linux-x64/9.1.9490": {
+      "sha512": "dobRuBM3treUwSybI5afMnwMmXEXyhjKXc5WFSUSvtYqTwHMCNQ0sPlReuU6jjOUvcATwd3j5+38oAYnN4Db9g==",
+      "type": "package",
+      "path": "google.ortools.runtime.linux-x64/9.1.9490",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/orLogo.png",
+        "google.ortools.runtime.linux-x64.9.1.9490.nupkg.sha512",
+        "google.ortools.runtime.linux-x64.nuspec",
+        "runtimes/linux-x64/native/google-ortools-native.so",
+        "runtimes/linux-x64/native/libortools.so"
+      ]
+    },
+    "Google.OrTools.runtime.osx-x64/9.1.9490": {
+      "sha512": "cNX10WubW3PFuMjZ2wRyxHMG4gzyO6KwCGKaI/iGkME4wLE0ia0Kxt6jBXUVZ9snRSqkLM4zF5zfV3D6lCCe6w==",
+      "type": "package",
+      "path": "google.ortools.runtime.osx-x64/9.1.9490",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/orLogo.png",
+        "google.ortools.runtime.osx-x64.9.1.9490.nupkg.sha512",
+        "google.ortools.runtime.osx-x64.nuspec",
+        "runtimes/osx-x64/native/google-ortools-native.dylib",
+        "runtimes/osx-x64/native/libortools.dylib"
+      ]
+    },
+    "Google.OrTools.runtime.win-x64/9.1.9490": {
+      "sha512": "tcH1/AS9V5BeYAmmOePiIkSWMRdg8JCdJKQaImnsTHNmh7+yv6aleaPKurq2cZZJqjgVQ8+eKe/93vZAfl3yJQ==",
+      "type": "package",
+      "path": "google.ortools.runtime.win-x64/9.1.9490",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "content/orLogo.png",
+        "google.ortools.runtime.win-x64.9.1.9490.nupkg.sha512",
+        "google.ortools.runtime.win-x64.nuspec",
+        "runtimes/win-x64/native/absl_bad_any_cast_impl.lib",
+        "runtimes/win-x64/native/absl_bad_optional_access.lib",
+        "runtimes/win-x64/native/absl_bad_variant_access.lib",
+        "runtimes/win-x64/native/absl_base.lib",
+        "runtimes/win-x64/native/absl_city.lib",
+        "runtimes/win-x64/native/absl_civil_time.lib",
+        "runtimes/win-x64/native/absl_cord.lib",
+        "runtimes/win-x64/native/absl_debugging_internal.lib",
+        "runtimes/win-x64/native/absl_demangle_internal.lib",
+        "runtimes/win-x64/native/absl_examine_stack.lib",
+        "runtimes/win-x64/native/absl_exponential_biased.lib",
+        "runtimes/win-x64/native/absl_failure_signal_handler.lib",
+        "runtimes/win-x64/native/absl_flags.lib",
+        "runtimes/win-x64/native/absl_flags_commandlineflag.lib",
+        "runtimes/win-x64/native/absl_flags_commandlineflag_internal.lib",
+        "runtimes/win-x64/native/absl_flags_config.lib",
+        "runtimes/win-x64/native/absl_flags_internal.lib",
+        "runtimes/win-x64/native/absl_flags_marshalling.lib",
+        "runtimes/win-x64/native/absl_flags_parse.lib",
+        "runtimes/win-x64/native/absl_flags_private_handle_accessor.lib",
+        "runtimes/win-x64/native/absl_flags_program_name.lib",
+        "runtimes/win-x64/native/absl_flags_reflection.lib",
+        "runtimes/win-x64/native/absl_flags_usage.lib",
+        "runtimes/win-x64/native/absl_flags_usage_internal.lib",
+        "runtimes/win-x64/native/absl_graphcycles_internal.lib",
+        "runtimes/win-x64/native/absl_hash.lib",
+        "runtimes/win-x64/native/absl_hashtablez_sampler.lib",
+        "runtimes/win-x64/native/absl_int128.lib",
+        "runtimes/win-x64/native/absl_leak_check.lib",
+        "runtimes/win-x64/native/absl_leak_check_disable.lib",
+        "runtimes/win-x64/native/absl_log_severity.lib",
+        "runtimes/win-x64/native/absl_malloc_internal.lib",
+        "runtimes/win-x64/native/absl_periodic_sampler.lib",
+        "runtimes/win-x64/native/absl_random_distributions.lib",
+        "runtimes/win-x64/native/absl_random_internal_distribution_test_util.lib",
+        "runtimes/win-x64/native/absl_random_internal_platform.lib",
+        "runtimes/win-x64/native/absl_random_internal_pool_urbg.lib",
+        "runtimes/win-x64/native/absl_random_internal_randen.lib",
+        "runtimes/win-x64/native/absl_random_internal_randen_hwaes.lib",
+        "runtimes/win-x64/native/absl_random_internal_randen_hwaes_impl.lib",
+        "runtimes/win-x64/native/absl_random_internal_randen_slow.lib",
+        "runtimes/win-x64/native/absl_random_internal_seed_material.lib",
+        "runtimes/win-x64/native/absl_random_seed_gen_exception.lib",
+        "runtimes/win-x64/native/absl_random_seed_sequences.lib",
+        "runtimes/win-x64/native/absl_raw_hash_set.lib",
+        "runtimes/win-x64/native/absl_raw_logging_internal.lib",
+        "runtimes/win-x64/native/absl_scoped_set_env.lib",
+        "runtimes/win-x64/native/absl_spinlock_wait.lib",
+        "runtimes/win-x64/native/absl_stacktrace.lib",
+        "runtimes/win-x64/native/absl_status.lib",
+        "runtimes/win-x64/native/absl_statusor.lib",
+        "runtimes/win-x64/native/absl_str_format_internal.lib",
+        "runtimes/win-x64/native/absl_strerror.lib",
+        "runtimes/win-x64/native/absl_strings.lib",
+        "runtimes/win-x64/native/absl_strings_internal.lib",
+        "runtimes/win-x64/native/absl_symbolize.lib",
+        "runtimes/win-x64/native/absl_synchronization.lib",
+        "runtimes/win-x64/native/absl_throw_delegate.lib",
+        "runtimes/win-x64/native/absl_time.lib",
+        "runtimes/win-x64/native/absl_time_zone.lib",
+        "runtimes/win-x64/native/absl_wyhash.lib",
+        "runtimes/win-x64/native/google-ortools-native.dll",
+        "runtimes/win-x64/native/libprotobuf-lite.lib",
+        "runtimes/win-x64/native/libprotobuf.lib",
+        "runtimes/win-x64/native/libprotoc.lib",
+        "runtimes/win-x64/native/libscip.lib",
+        "runtimes/win-x64/native/ortools.lib",
+        "runtimes/win-x64/native/zlib.lib"
+      ]
+    },
+    "Google.Protobuf/3.18.0": {
+      "sha512": "Jm6+nppUm9LD+XVsLFkf1YyVlAKsG5gq+Hc/Rn3Zi2pDObBI6PCH/eHBFUJdARl40DpczEdHlV3+WTPOGIXetg==",
+      "type": "package",
+      "path": "google.protobuf/3.18.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "google.protobuf.3.18.0.nupkg.sha512",
+        "google.protobuf.nuspec",
+        "lib/net45/Google.Protobuf.dll",
+        "lib/net45/Google.Protobuf.pdb",
+        "lib/net45/Google.Protobuf.xml",
+        "lib/net5.0/Google.Protobuf.dll",
+        "lib/net5.0/Google.Protobuf.pdb",
+        "lib/net5.0/Google.Protobuf.xml",
+        "lib/netstandard1.1/Google.Protobuf.dll",
+        "lib/netstandard1.1/Google.Protobuf.pdb",
+        "lib/netstandard1.1/Google.Protobuf.xml",
+        "lib/netstandard2.0/Google.Protobuf.dll",
+        "lib/netstandard2.0/Google.Protobuf.pdb",
+        "lib/netstandard2.0/Google.Protobuf.xml"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net5.0": [
+      "Google.OrTools >= 9.1.9490"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\yre\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
+      "projectName": "Project",
+      "projectPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
+      "packagesPath": "C:\\Users\\yre\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\yre\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net5.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net5.0": {
+        "targetAlias": "net5.0",
+        "dependencies": {
+          "Google.OrTools": {
+            "target": "Package",
+            "version": "[9.1.9490, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
