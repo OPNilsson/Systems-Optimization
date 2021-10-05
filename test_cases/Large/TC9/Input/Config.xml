@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Architecture>
+	<Vertex Name="ES1">
+	</Vertex>
+	<Vertex Name="ES2">
+	</Vertex>
+	<Vertex Name="ES3">
+	</Vertex>
+	<Vertex Name="ES4">
+	</Vertex>
+   <Vertex Name="ES5">
+	</Vertex>
+	<Vertex Name="SW1">
+	</Vertex>
+  <Vertex Name="SW2">
+	</Vertex>
+  <Vertex Name="SW3">
+	</Vertex>
+  <Vertex Name="SW4">
+	</Vertex>
+  <Vertex Name="SW5">
+	</Vertex>
+  <Vertex Name="SW6">
+	</Vertex>
+  <Vertex Name="SW7">
+	</Vertex>
+  <Vertex Name="SW8">
+	</Vertex>
+	<Edge Id="1" BW="1000" PropDelay="10" Source="ES1" Destination="SW1">
+	</Edge>
+	<Edge Id="2" BW="1000" PropDelay="10" Source="SW1" Destination="SW2">
+	</Edge>
+  <Edge Id="3" BW="1000" PropDelay="10" Source="SW1" Destination="SW3">
+	</Edge>
+	<Edge Id="4" BW="1000" PropDelay="10" Source="SW2" Destination="SW4">
+	</Edge>
+  <Edge Id="5" BW="1000" PropDelay="10" Source="SW2" Destination="SW7">
+	</Edge>
+  <Edge Id="6" BW="1000" PropDelay="10" Source="SW3" Destination="SW5">
+	</Edge>
+  <Edge Id="7" BW="1000" PropDelay="10" Source="SW4" Destination="SW6">
+	</Edge>
+  <Edge Id="8" BW="1000" PropDelay="10" Source="SW5" Destination="SW6">
+	</Edge>
+  <Edge Id="9" BW="1000" PropDelay="10" Source="SW6" Destination="ES2">
+	</Edge>
+  <Edge Id="10" BW="1000" PropDelay="10" Source="SW4" Destination="ES3">
+	</Edge>
+  <Edge Id="11" BW="1000" PropDelay="10" Source="SW3" Destination="ES4">
+	</Edge>
+  <Edge Id="12" BW="1000" PropDelay="10" Source="SW2" Destination="ES1">
+	</Edge>
+  <Edge Id="13" BW="1000" PropDelay="10" Source="SW5" Destination="ES2">
+	</Edge>
+   <Edge Id="14" BW="1000" PropDelay="10" Source="SW7" Destination="ES3">
+	</Edge>
+  <Edge Id="15" BW="1000" PropDelay="10" Source="SW8" Destination="SW5">
+	</Edge>
+  <Edge Id="16" BW="1000" PropDelay="10" Source="SW8" Destination="ES5">
+	</Edge>
+  <Edge Id="17" BW="1000" PropDelay="10" Source="SW8" Destination="ES4">
+	</Edge>
+</Architecture>

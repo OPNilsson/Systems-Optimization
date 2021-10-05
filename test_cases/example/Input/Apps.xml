@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<Application>
+		<Message Name="F1" Source="ES1" Destination="ES2" Size="300" Period="2000" Deadline="2000">
+		</Message>
+		<Message Name="F2" Source="ES1" Destination="ES2" Size="400" Period="2000" Deadline="2000">
+		</Message>
+		<Message Name="F3" Source="ES1" Destination="ES2" Size="500" Period="4000" Deadline="4000">
+		</Message>
+    <Message Name="F4" Source="ES1" Destination="ES2" Size="300" Period="8000" Deadline="4000">
+		</Message>
+    <Message Name="F5" Source="ES2" Destination="ES1" Size="400" Period="2000" Deadline="2000">
+		</Message>
+    <Message Name="F6" Source="ES2" Destination="ES1" Size="500" Period="2000" Deadline="2000">
+		</Message>
+    <Message Name="F7" Source="ES2" Destination="ES1" Size="300" Period="4000" Deadline="4000">
+		</Message>
+    <Message Name="F8" Source="ES1" Destination="ES2" Size="400" Period="8000" Deadline="4000">
+		</Message>
+</Application>

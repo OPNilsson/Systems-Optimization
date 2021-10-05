@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report>
+	<Solution Runtime="0.2" MeanE2E="32" MeanBW="190">
+	</Solution>
+	<Message Name="F1" maxE2E="76" >
+		<Link Source="ES1" Destination="SW1" Qnumber="2">
+		</Link>
+		<Link Source="SW1" Destination="ES2" Qnumber="1">
+		</Link>
+	</Message>
+	<Message Name="F2" maxE2E="88">
+		<Link Source="ES1" Destination="SW2" Qnumber="1">
+		</Link>
+		<Link Source="SW2" Destination="ES2" Qnumber="3">
+		</Link>
+	</Message>
+	<Message Name="F3" maxE2E="112">
+		<Link Source="ES1" Destination="SW2" Qnumber="3">
+		</Link>
+		<Link Source="SW2" Destination="ES2" Qnumber="3">
+		</Link>
+	</Message>
+    <Message Name="F4" maxE2E="88">
+		<Link Source="ES1" Destination="SW1" Qnumber="1">
+		</Link>
+		<Link Source="SW1" Destination="ES2" Qnumber="3">
+		</Link>
+	</Message>
+    <Message Name="F5" maxE2E="88">
+		<Link Source="ES2" Destination="SW2" Qnumber="2">
+		</Link>
+		<Link Source="SW2" Destination="ES1" Qnumber="2">
+		</Link>
+	</Message>
+    <Message Name="F6" maxE2E="76">
+		<Link Source="ES2" Destination="SW2" Qnumber="2">
+		</Link>
+		<Link Source="SW2" Destination="ES1" Qnumber="1">
+		</Link>
+	</Message>
+    <Message Name="F7" maxE2E="100">
+		<Link Source="ES2" Destination="SW2" Qnumber="3">
+		</Link>
+		<Link Source="SW2" Destination="ES1" Qnumber="2">
+		</Link>
+	</Message>
+    <Message Name="F8" maxE2E="76">
+		<Link Source="ES1" Destination="SW2" Qnumber="2">
+		</Link>
+		<Link Source="SW2" Destination="ES2" Qnumber="1">
+		</Link>
+	</Message>
+</Report>
