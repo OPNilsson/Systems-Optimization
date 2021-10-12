@@ -11,3 +11,10 @@ Project/obj/x64/Debug/net5.0/Project.csproj.FileListAbsolute.txt
 Project/obj/x64/Debug/net5.0/apphost.exe
 *.cache
 *.editorconfig
+Project/obj/project.assets.json
+Project/obj/Project.csproj.nuget.dgspec.json
+*.props
+*.cache
+*.exe
+*.cache
+*.editorconfig
