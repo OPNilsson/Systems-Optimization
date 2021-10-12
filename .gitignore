@@ -8,3 +8,6 @@ Project/obj/x64/Debug/net5.0/Project.csproj.FileListAbsolute.txt
 *.editorconfig
 *.pdb
 *.pdb
+Project/obj/x64/Debug/net5.0/apphost.exe
+*.cache
+*.editorconfig
