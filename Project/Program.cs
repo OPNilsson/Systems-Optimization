@@ -2,17 +2,19 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using Vertex = System.String;
+
 
 namespace Project
 {
     class Message
     {
-        public String Name { get; set; }
-        public String Source { get; set; }
-        public String Destination { get; set; }
-        public uint Size { set; get; }
-        public uint Period { get; set; }
-        public uint Deadline { get; set; }
+        public String Name { get; }
+        public String Source { get; }
+        public String Destination { get; }
+        public uint Size { get; }
+        public uint Period { get; }
+        public uint Deadline { get; }
         public Message(String name, String source, String destination, uint size, uint period, uint deadline)
         {
             this.Name = name;
@@ -23,6 +25,26 @@ namespace Project
             this.Deadline = deadline;
         }
     }
+
+    class Edge
+    {
+        public String Id { get; }
+        public uint BW { get; }
+        public uint PropDelay { get; }
+        String Source { get; }
+        String Destination { get; }
+
+        public Edge(String Id, uint BW, uint PropDelay, String Source, String Destination)
+        {
+            this.Id = Id;
+            this.BW = BW;
+            this.PropDelay = PropDelay;
+            this.Source = Source;
+            this.Destination = Destination;
+        }
+    }
+ 
+    
 
     class Program
     {
@@ -35,9 +57,9 @@ namespace Project
 
             doc.Load(path);
 
-            var applicationNode = doc.SelectSingleNode("//Application");
+            XmlNode applicationNode = doc.SelectSingleNode("//Application");
 
-            var messageNodes = applicationNode.SelectNodes(".//Message");
+            XmlNodeList messageNodes = applicationNode.SelectNodes(".//Message");
 
             foreach (XmlNode messageNode in messageNodes)
             {
@@ -55,9 +77,47 @@ namespace Project
             return messages;
         }
 
+        public static (List<Vertex>, List<Edge>) ParseArchiteure(String path)
+        {
+            List<Vertex> vertices = new List<Vertex>();
+            vertices.Clear();
+
+            List<Edge> edges = new List<Edge>();
+            edges.Clear();
+
+            XmlDocument doc = new XmlDocument();
+
+            doc.Load(path);
+
+            XmlNode architectureNode = doc.SelectSingleNode("//Architecture");
+
+            XmlNodeList vertexNodes = architectureNode.SelectNodes(".//Vertex");
+
+            foreach (XmlNode vertexNode in vertexNodes)
+            {
+                vertices.Add(vertexNode.Attributes["Name"].Value);
+            }
+
+            XmlNodeList edgeNodes = architectureNode.SelectNodes(".//Edge");
+
+            foreach (XmlNode edgeNode in edgeNodes)
+            {
+                String id = edgeNode.Attributes["Id"].Value;
+                uint BW = uint.Parse(edgeNode.Attributes["BW"].Value);
+                uint propDelay = uint.Parse(edgeNode.Attributes["PropDelay"].Value);
+                String source = edgeNode.Attributes["Source"].Value;
+                String destination = edgeNode.Attributes["Destination"].Value;
+
+                edges.Add(new Edge(id, BW, propDelay, source, destination));
+            }
+
+            return (vertices, edges);
+        }
+
         static void Main(string[] args)
         {
             List<Message> messages = ParseMessageXml("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Apps.xml");
+            (List<Vertex> vertices, List<Edge> edges) = ParseArchiteure("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Config.xml");
         }
     }
 }
