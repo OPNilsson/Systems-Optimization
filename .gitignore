@@ -1,1 +1,10 @@
 Project/bin
+.vs/Project/v16/.suo
+*.props
+*.cache
+*.exe
+Project/obj/x64/Debug/net5.0/Project.csproj.FileListAbsolute.txt
+*.dll
+*.editorconfig
+*.pdb
+*.pdb
