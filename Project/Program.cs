@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Xml;
 using Vertex = System.String;
 
-
 namespace Project
 {
     class Message
@@ -50,10 +49,10 @@ namespace Project
     {
         public static List<Message> ParseMessageXml(String path)
         {
-            List<Message> messages = new List<Message>();
+            List<Message> messages = new();
             messages.Clear();
 
-            XmlDocument doc = new XmlDocument();
+            XmlDocument doc = new();
 
             doc.Load(path);
 
@@ -82,10 +81,10 @@ namespace Project
             List<Vertex> vertices = new List<Vertex>();
             vertices.Clear();
 
-            List<Edge> edges = new List<Edge>();
+            List<Edge> edges = new();
             edges.Clear();
 
-            XmlDocument doc = new XmlDocument();
+            XmlDocument doc = new();
 
             doc.Load(path);
 
