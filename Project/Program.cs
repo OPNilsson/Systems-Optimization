@@ -26,7 +26,7 @@ namespace Project
 
     class Program
     {
-        public static List<Message> Load_xml(String path)
+        public static List<Message> ParseMessageXml(String path)
         {
             List<Message> messages = new List<Message>();
             messages.Clear();
@@ -51,17 +51,13 @@ namespace Project
                 messages.Add(new Message(name, source, destination, size, period, deadline));
             }
 
-            foreach(var message in messages)
-            {
-                Console.WriteLine(message.Deadline);
-            }
 
             return messages;
         }
 
         static void Main(string[] args)
         {
-            List<Message> messages = Load_xml("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Apps.xml");
+            List<Message> messages = ParseMessageXml("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Apps.xml");
         }
     }
 }
