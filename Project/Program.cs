@@ -78,7 +78,7 @@ namespace Project
 
         public static (List<Vertex>, List<Edge>) ParseArchiteure(String path)
         {
-            List<Vertex> vertices = new List<Vertex>();
+            List<Vertex> vertices = new();
             vertices.Clear();
 
             List<Edge> edges = new();
