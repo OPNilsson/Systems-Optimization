@@ -168,6 +168,7 @@ namespace exercise
 			int coreId = 0;
 
 			int highestTaskCount = 0;
+			int lowerstTaskCount = 0;
 
 			// Testing variables DELETE when no longer needed.
 			int unscheduled = unscheduledTasks.Count();
@@ -202,6 +203,18 @@ namespace exercise
 
 					List<Task> coreTasks = map[mCPs[mcpId].getCores()[coreId]];
 
+					if(scheduled == cores.Count() && lowerstTaskCount == 0) // All cores have been assigned atleast one task
+                    {
+						lowerstTaskCount++;
+
+						map[mCPs[mcpId].getCores()[coreId]].Add(task);
+
+						task.schedule();
+						scheduled++;
+
+						break;
+                    }
+
 					// Balance task placement across the cores.
 					List<Task> nextCoreTasks;
 					List<Task> prevCoreTasks;
@@ -222,7 +235,7 @@ namespace exercise
 						prevCoreTasks = null;
 					}
 
-					if (coreTasks.Count() > highestTaskCount) // The core is the most used in the system.
+                   if (coreTasks.Count() > highestTaskCount) // The core is the most used in the system.
 					{
 						highestTaskCount = coreTasks.Count();
 						continue;
@@ -231,7 +244,11 @@ namespace exercise
 					{
 						available = true;
 					}
-					else if(prevCoreTasks != null || nextCoreTasks != null )
+				    else if (lowerstTaskCount == 0) // Makes sure that atleast 1 task is on every core
+                    {
+						continue;
+                    }
+					else if(prevCoreTasks != null || nextCoreTasks != null)
 					{
 						if(prevCoreTasks == null)
 						{
@@ -254,8 +271,7 @@ namespace exercise
 						}
 					}
 
-					 if (available)
-
+					 if (available) {
 						// reduce looping.
 						if(coreTasks.Count() > 0)
 						{
@@ -280,6 +296,7 @@ namespace exercise
 
 							break;
 						}
+					 }
 			   }
 			}
 
@@ -446,6 +463,7 @@ namespace exercise
 							doc.Save(Directory.GetCurrentDirectory() + "//solution.xml");
 
 							Console.WriteLine();
+							Console.WriteLine();
 							Console.WriteLine("Document saved to: ");
 							Console.WriteLine(Directory.GetCurrentDirectory() + "//solution.xml");
 
@@ -455,6 +473,9 @@ namespace exercise
 
 					case 2:
 					{
+							Console.WriteLine();
+							Console.Write("No file saved!");
+
 							asking = false; // Break the asking loop
 							break;
 					}
@@ -472,7 +493,7 @@ namespace exercise
 			}
 
 			Console.WriteLine();
-			Console.WriteLine("Press enter to exit.");
+			Console.WriteLine("Press ENTER to exit.");
 		}
 
 		// Not currently being using in this Program!
@@ -717,7 +738,7 @@ namespace exercise
 
 			// Give some more statistics for testing purposes.
 			Console.WriteLine();
-			Console.WriteLine("Total Number of Tasks in Sample  : " + tasks.Count());
+			Console.WriteLine("Total Number of Tasks in Sample:   " + tasks.Count());
 			Console.WriteLine("Total Number of Tasks in Solution: " + taskCount);
 
 			// Asking and printing of an xml of the solution
