@@ -93,7 +93,7 @@ namespace exercise
 	class Program
 	{
 
-		public const string PATH = "../../XML/";
+		public const string PATH = "../../../XML/";
 		public static string menu()
 		{
 			bool asking = true;
