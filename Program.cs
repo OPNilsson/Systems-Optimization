@@ -112,7 +112,17 @@ namespace exercise
 
 				Console.Write("Please Select the size of your Sample Use case: ");
 
-				int response = Int32.Parse(Console.ReadLine());
+				int response;
+				{
+					string input;
+					
+					input = Console.ReadLine();
+					while (!int.TryParse(input, out response))
+					{
+						Console.WriteLine("Bad input");
+						input = Console.ReadLine();
+					}
+				}
 
 				switch (response)
 				{
@@ -436,7 +446,17 @@ namespace exercise
 
 				Console.Write("Please Select if you would like to save the solution as an XML: ");
 
-				int response = Int32.Parse(Console.ReadLine());
+				int response;
+				{
+					string input;
+
+					input = Console.ReadLine();
+					while (!int.TryParse(input, out response))
+					{
+						Console.WriteLine("Bad input");
+						input = Console.ReadLine();
+					}
+				}
 
 				switch (response)
 				{
