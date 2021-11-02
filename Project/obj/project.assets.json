@@ -504,19 +504,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\yre\\.nuget\\packages\\": {}
+    "C:\\Users\\yannr\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
+      "projectUniqueName": "C:\\Users\\yannr\\Documents\\system_optimization\\Systems-Optimization\\Project\\Project.csproj",
       "projectName": "Project",
-      "projectPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
-      "packagesPath": "C:\\Users\\yre\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\obj\\",
+      "projectPath": "C:\\Users\\yannr\\Documents\\system_optimization\\Systems-Optimization\\Project\\Project.csproj",
+      "packagesPath": "C:\\Users\\yannr\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\yannr\\Documents\\system_optimization\\Systems-Optimization\\Project\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\yre\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\yannr\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -562,7 +562,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.401\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.402\\RuntimeIdentifierGraph.json"
       }
     }
   }

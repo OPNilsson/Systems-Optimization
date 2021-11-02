@@ -115,8 +115,59 @@ namespace Project
 
         static void Main(string[] args)
         {
-            List<Message> messages = ParseMessageXml("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Apps.xml");
-            (List<Vertex> vertices, List<Edge> edges) = ParseArchiteure("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Config.xml");
-        }
+            //List<Message> messages = ParseMessageXml("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Apps.xml");
+            //(List<Vertex> vertices, List<Edge> edges) = ParseArchiteure("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Config.xml");
+
+            CpModel model = new();
+
+            IntVar x = model.NewIntVar(0, 10, "x");
+            IntVar y = model.NewIntVar(0, 10, "y");
+            IntVar z = model.NewIntVar(0, 10, "z");
+
+            model.Add(x != z);
+            model.Add(x != y);
+
+            model.Maximize(x + 2 * y + 3 * z);
+
+            CpSolver solver = new();
+
+            CpSolverStatus status = solver.Solve(model);
+
+            if (status == CpSolverStatus.Optimal || status == CpSolverStatus.Feasible)
+            {
+                Console.WriteLine($"Maximum of objective function: {solver.ObjectiveValue}");
+                Console.WriteLine("x = " + solver.Value(x));
+                Console.WriteLine("y = " + solver.Value(y));
+                Console.WriteLine("z = " + solver.Value(z));
+            }
+            else
+            {
+                Console.WriteLine("No solution found.");
+            }
+
+
+            // System.Diagnostics.Debug.WriteLine(str);
+            Console.WriteLine("Statistics");
+            Console.WriteLine($"  conflicts: {solver.NumConflicts()}");
+            Console.WriteLine($"  branches : {solver.NumBranches()}");
+            Console.WriteLine($"  wall time: {solver.WallTime()}s");
+
+
+
+            //IntVar[] tasks = new IntVar[messages.Count];
+
+            // TODO: create variables in ortools
+            
+
+
+            // TODO: create domain
+
+            // TODO: create constraints
+
+            // Find the correct solver
+            
+            
+        
+       }
     }
 }

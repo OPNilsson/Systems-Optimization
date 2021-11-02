@@ -2,10 +2,10 @@ This document gives the description of tags used in the output file.
 
 Tags	:	Description
 
-Solution	:	Parnet object of the solution
+Solution	:	Parent object of the solution
 Runtime		:	Runtime of the solution (seconds)
-MeanE2E		: 	Mean end-to-end  delay of all flows
-MeanBW		:	Mean maximum bandwidth utilization of all links
+MeanE2E		: 	Mean normalized end-to-end delay of all flows (multiply by 1000)
+MeanBW		:	Mean normalized maximum bandwidth utilization of all links (multiply by 1000)
 
 Message		: 	Parent object for flow
 Name		:	Identifier of the flow
