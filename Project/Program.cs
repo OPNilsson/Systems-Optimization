@@ -23,6 +23,7 @@ namespace Project
             this.Period = period;
             this.Deadline = deadline;
         }
+
     }
 
     class Edge
@@ -40,6 +41,18 @@ namespace Project
             this.PropDelay = PropDelay;
             this.Source = Source;
             this.Destination = Destination;
+        }
+
+        public static Edge GetEdgeFromVerticies(Vertex source, Vertex destination, List<Edge> edges)
+        {
+            foreach (Edge edge in edges)
+            {
+                if (String.Equals(edge.Source, source) && String.Equals(edge.Destination, destination) || String.Equals(edge.Source, destination) && String.Equals(edge.Destination, source))
+                {
+                    return edge;
+                }
+            }
+            return null;
         }
     }
  
