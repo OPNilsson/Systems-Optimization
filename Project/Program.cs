@@ -30,8 +30,8 @@ namespace Project
         public String Id { get; }
         public uint BW { get; }
         public uint PropDelay { get; }
-        String Source { get; }
-        String Destination { get; }
+        public String Source { get; }
+        public String Destination { get; }
 
         public Edge(String Id, uint BW, uint PropDelay, String Source, String Destination)
         {
@@ -113,51 +113,80 @@ namespace Project
             return (vertices, edges);
         }
 
-        static void Main(string[] args)
+        // utility function to check if current
+        // vertex is already present in path
+        public static bool IsNotVisited(Vertex v, List<Vertex> path)
         {
-            //List<Message> messages = ParseMessageXml("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Apps.xml");
-            //(List<Vertex> vertices, List<Edge> edges) = ParseArchiteure("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Config.xml");
+            int size = path.Count;
+            for (int i = 0; i < size; i++)
+                if (String.Equals(path[i], v))
+                    return false;
+            return true;
+        }
+
+        // utility function for finding paths in graph
+        // from source to destination
+        public static List<List<Vertex>> Findpaths(Vertex src, Vertex dst, List<Edge> edges)
+        {
+            // create a queue which stores
+            // the paths
+            Queue<List<Vertex>> q = new();
+
+            // path vector to store the current path
+            List<List<Vertex>> paths = new();
+            List<Vertex> path = new();
+            path.Add(src);
+            q.Enqueue(path);
+            while (q.Count != 0)
+            {
+                path = q.Dequeue();
+                Vertex last = path[path.Count - 1];
+
+                // if last vertex is the desired destination
+                // then print the path
+                if (String.Equals(last,dst))
+                    paths.Add(path);
+
+                // traverse to all the nodes connected to 
+                // current vertex and push new path to queue
+                foreach (Edge edge in edges)
+                {
+                    Vertex n = null;
+                    if (String.Equals(edge.Source, last)) n = edge.Destination;
+                    else if (String.Equals(edge.Destination, last)) n = edge.Source;
+                    if (n != null && IsNotVisited(n, path))
+                    {
+                        List<Vertex> newpath = new(path);
+                        newpath.Add(n);
+                        q.Enqueue(newpath);
+                    }
+                }
+            }
+            return paths;
+        }
+
+        static void Main()
+        {
+            List<Message> messages = ParseMessageXml("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Apps.xml");
+            (List<Vertex> vertices, List<Edge> edges) = ParseArchiteure("..\\..\\..\\..\\..\\test_cases\\Small\\TC1\\Input\\Config.xml");
 
             CpModel model = new();
 
-            IntVar x = model.NewIntVar(0, 10, "x");
-            IntVar y = model.NewIntVar(0, 10, "y");
-            IntVar z = model.NewIntVar(0, 10, "z");
 
-            model.Add(x != z);
-            model.Add(x != y);
+            List<List<Vertex>> paths = Findpaths("ES1", "ES2", edges);
 
-            model.Maximize(x + 2 * y + 3 * z);
-
-            CpSolver solver = new();
-
-            CpSolverStatus status = solver.Solve(model);
-
-            if (status == CpSolverStatus.Optimal || status == CpSolverStatus.Feasible)
+            foreach (List<Vertex> path in paths)
             {
-                Console.WriteLine($"Maximum of objective function: {solver.ObjectiveValue}");
-                Console.WriteLine("x = " + solver.Value(x));
-                Console.WriteLine("y = " + solver.Value(y));
-                Console.WriteLine("z = " + solver.Value(z));
+                foreach (Vertex v in path)
+                {
+                    Console.Write(v + " ");
+                }
+                Console.WriteLine();
             }
-            else
-            {
-                Console.WriteLine("No solution found.");
-            }
-
-
-            // System.Diagnostics.Debug.WriteLine(str);
-            Console.WriteLine("Statistics");
-            Console.WriteLine($"  conflicts: {solver.NumConflicts()}");
-            Console.WriteLine($"  branches : {solver.NumBranches()}");
-            Console.WriteLine($"  wall time: {solver.WallTime()}s");
-
-
-
             //IntVar[] tasks = new IntVar[messages.Count];
 
             // TODO: create variables in ortools
-            
+
 
 
             // TODO: create domain
@@ -165,9 +194,9 @@ namespace Project
             // TODO: create constraints
 
             // Find the correct solver
-            
-            
-        
-       }
+
+
+
+        }
     }
 }
