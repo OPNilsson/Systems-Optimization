@@ -18,3 +18,13 @@ Project/obj/Project.csproj.nuget.dgspec.json
 *.exe
 *.cache
 *.editorconfig
+.vs/Project/v16/.suo
+*.v2
+*.json
+*.props
+*.cache
+*.cache
+Project/obj/x64/Debug/net5.0/Project.csproj.FileListAbsolute.txt
+*.dll
+*.editorconfig
+*.pdb

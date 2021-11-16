@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj": {}
+    "D:\\Documents\\School\\Denmark\\Fall 2021\\Systems Optimizations\\Project\\Systems-Optimization\\Project\\Project.csproj": {}
   },
   "projects": {
-    "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj": {
+    "D:\\Documents\\School\\Denmark\\Fall 2021\\Systems Optimizations\\Project\\Systems-Optimization\\Project\\Project.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
+        "projectUniqueName": "D:\\Documents\\School\\Denmark\\Fall 2021\\Systems Optimizations\\Project\\Systems-Optimization\\Project\\Project.csproj",
         "projectName": "Project",
-        "projectPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
-        "packagesPath": "C:\\Users\\yre\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\obj\\",
+        "projectPath": "D:\\Documents\\School\\Denmark\\Fall 2021\\Systems Optimizations\\Project\\Systems-Optimization\\Project\\Project.csproj",
+        "packagesPath": "C:\\Users\\ojvin\\.nuget\\packages\\",
+        "outputPath": "D:\\Documents\\School\\Denmark\\Fall 2021\\Systems Optimizations\\Project\\Systems-Optimization\\Project\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\yre\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\ojvin\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
