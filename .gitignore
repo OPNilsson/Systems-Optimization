@@ -28,3 +28,9 @@ Project/obj/x64/Debug/net5.0/Project.csproj.FileListAbsolute.txt
 *.dll
 *.editorconfig
 *.pdb
+*.v2
+.vs/Project/v16/.suo
+*.dll
+Project/obj/x64/Debug/net5.0/Project.pdb
+Project/obj/x64/Debug/net5.0/Project.dll
+*.pdb

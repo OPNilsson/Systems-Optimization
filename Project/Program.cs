@@ -285,7 +285,7 @@ namespace Project
             {
                 Console.WriteLine("--------------------------------------------------------------------------------");
 
-                Console.WriteLine("Available Topography Configureations based on sample size: ");
+                Console.WriteLine("Available Topography Configurations based on sample size: ");
                 Console.WriteLine("1) " + tcs[0]);
                 Console.WriteLine("2) " + tcs[1]);
                 Console.WriteLine("3) " + tcs[2]);
