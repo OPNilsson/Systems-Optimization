@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj": {}
+    "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\exercise.csproj": {}
   },
   "projects": {
-    "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj": {
+    "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\exercise.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
-        "projectName": "Project",
-        "projectPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\Project.csproj",
+        "projectUniqueName": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\exercise.csproj",
+        "projectName": "exercise",
+        "projectPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\exercise.csproj",
         "packagesPath": "C:\\Users\\yre\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\Project\\obj\\",
+        "outputPath": "C:\\Users\\yre\\Desktop\\DTU\\System_optimization\\Systems-Optimization\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\yre\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -39,12 +39,6 @@
       "frameworks": {
         "net5.0": {
           "targetAlias": "net5.0",
-          "dependencies": {
-            "Google.OrTools": {
-              "target": "Package",
-              "version": "[9.1.9490, )"
-            }
-          },
           "imports": [
             "net461",
             "net462",

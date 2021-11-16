@@ -1,0 +1,16 @@
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.csproj.AssemblyReference.cache
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.AssemblyInfoInputs.cache
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.AssemblyInfo.cs
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.csproj.CoreCompileInputs.cache
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\bin\Debug\net5.0\exercise.exe
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\bin\Debug\net5.0\exercise.deps.json
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\bin\Debug\net5.0\exercise.runtimeconfig.json
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\bin\Debug\net5.0\exercise.runtimeconfig.dev.json
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\bin\Debug\net5.0\exercise.dll
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\bin\Debug\net5.0\ref\exercise.dll
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\bin\Debug\net5.0\exercise.pdb
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.dll
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\ref\exercise.dll
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.pdb
+C:\Users\yre\Desktop\DTU\System_optimization\Systems-Optimization\obj\Debug\net5.0\exercise.genruntimeconfig.cache
