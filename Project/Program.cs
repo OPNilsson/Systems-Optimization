@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using Vertex = System.String;
 
 namespace Project
 {
     internal class Edge
     {
-        public Edge(String Id, uint BW, uint PropDelay, String Source, String Destination)
+        public Edge(String Id, uint BW, uint PropDelay, Vertex Source, Vertex Destination)
         {
             this.Id = Id;
             this.BW = BW;
@@ -18,16 +17,16 @@ namespace Project
         }
 
         public uint BW { get; }
-        public String Destination { get; }
+        public Vertex Destination { get; }
         public String Id { get; }
         public uint PropDelay { get; }
-        public String Source { get; }
+        public Vertex Source { get; }
 
         public static Edge GetEdgeFromVerticies(Vertex source, Vertex destination, List<Edge> edges)
         {
             foreach (Edge edge in edges)
             {
-                if (String.Equals(edge.Source, source) && String.Equals(edge.Destination, destination) || String.Equals(edge.Source, destination) && String.Equals(edge.Destination, source))
+                if (String.Equals(edge.Source.Name, source.Name) && String.Equals(edge.Destination.Name, destination.Name) || String.Equals(edge.Source.Name, destination.Name) && String.Equals(edge.Destination.Name, source.Name))
                 {
                     return edge;
                 }
@@ -38,7 +37,7 @@ namespace Project
 
     internal class Message
     {
-        public Message(String name, String source, String destination, uint size, uint period, uint deadline)
+        public Message(String name, Vertex source, Vertex destination, uint size, uint period, uint deadline)
         {
             this.Name = name;
             this.Source = source;
@@ -49,11 +48,12 @@ namespace Project
         }
 
         public uint Deadline { get; }
-        public String Destination { get; }
+        public Vertex Destination { get; }
         public String Name { get; }
+        public List<Edge> Path { get; set; }
         public uint Period { get; }
         public uint Size { get; }
-        public String Source { get; }
+        public Vertex Source { get; }
     }
 
     internal class Program
@@ -70,6 +70,7 @@ namespace Project
             List<Vertex> path = new();
             path.Add(src);
             q.Enqueue(path);
+
             while (q.Count != 0)
             {
                 path = q.Dequeue();
@@ -91,11 +92,13 @@ namespace Project
                 foreach (Edge edge in edges)
                 {
                     Vertex n = null;
-                    if (String.Equals(edge.Source, last)) n = edge.Destination;
-                    else if (String.Equals(edge.Destination, last)) n = edge.Source;
+
+                    if (String.Equals(edge.Source.Name, last.Name)) n = edge.Destination;
+                    else if (String.Equals(edge.Destination.Name, last.Name)) n = edge.Source;
+
                     if (n != null && IsNotVisited(n, path))
                     {
-                        List<Vertex> newpath = new(path);
+                        List<Vertex> newpath = path;
                         newpath.Add(n);
                         q.Enqueue(newpath);
                     }
@@ -355,7 +358,7 @@ namespace Project
 
             foreach (XmlNode vertexNode in vertexNodes)
             {
-                vertices.Add(vertexNode.Attributes["Name"].Value);
+                vertices.Add(new Vertex(vertexNode.Attributes["Name"].Value));
             }
 
             XmlNodeList edgeNodes = architectureNode.SelectNodes(".//Edge");
@@ -365,8 +368,28 @@ namespace Project
                 String id = edgeNode.Attributes["Id"].Value;
                 uint BW = uint.Parse(edgeNode.Attributes["BW"].Value);
                 uint propDelay = uint.Parse(edgeNode.Attributes["PropDelay"].Value);
-                String source = edgeNode.Attributes["Source"].Value;
-                String destination = edgeNode.Attributes["Destination"].Value;
+
+                Vertex source = null;
+                Vertex destination = null;
+
+                // Loop through the vertecies to find the source and destination objects
+                foreach (Vertex vertex in vertices)
+                {
+                    if (vertex.Name == edgeNode.Attributes["Source"].Value)
+                    {
+                        source = vertex;
+                    }
+
+                    if (vertex.Name == edgeNode.Attributes["Destination"].Value)
+                    {
+                        destination = vertex;
+                    }
+                }
+
+                if (source == null || destination == null)
+                {
+                    Console.WriteLine("Source or Destination EMPTY for Edge: " + id);
+                }
 
                 edges.Add(new Edge(id, BW, propDelay, source, destination));
             }
@@ -374,7 +397,7 @@ namespace Project
             return (vertices, edges);
         }
 
-        public static List<Message> ParseMessageXml(String path)
+        public static List<Message> ParseMessageXml(String path, List<Vertex> vertices)
         {
             List<Message> messages = new();
             messages.Clear();
@@ -390,11 +413,32 @@ namespace Project
             foreach (XmlNode messageNode in messageNodes)
             {
                 String name = messageNode.Attributes["Name"].Value;
-                String source = messageNode.Attributes["Source"].Value;
-                String destination = messageNode.Attributes["Destination"].Value;
+
                 uint size = uint.Parse(messageNode.Attributes["Size"].Value);
                 uint period = uint.Parse(messageNode.Attributes["Period"].Value);
                 uint deadline = uint.Parse(messageNode.Attributes["Deadline"].Value);
+
+                Vertex source = null;
+                Vertex destination = null;
+
+                // Loop through the vertecies to find the source and destination objects
+                foreach (Vertex vertex in vertices)
+                {
+                    if (vertex.Name == messageNode.Attributes["Source"].Value)
+                    {
+                        source = vertex;
+                    }
+
+                    if (vertex.Name == messageNode.Attributes["Destination"].Value)
+                    {
+                        destination = vertex;
+                    }
+                }
+
+                if (source == null || destination == null)
+                {
+                    Console.WriteLine("Source or Destination EMPTY for Message: " + name);
+                }
 
                 messages.Add(new Message(name, source, destination, size, period, deadline));
             }
@@ -458,8 +502,8 @@ namespace Project
             Console.WriteLine(PATH);
 
             // Reading from the XML
-            List<Message> messages = ParseMessageXml(PATH + "Apps.xml");
             (List<Vertex> vertices, List<Edge> edges) = ParseArchiteure(PATH + "Config.xml");
+            List<Message> messages = ParseMessageXml(PATH + "Apps.xml", vertices);
 
             Dictionary<Message, List<List<Edge>>> message_routes = new Dictionary<Message, List<List<Edge>>>();
             foreach (Message message in messages)
@@ -497,5 +541,15 @@ namespace Project
                     }
             }
         }
+    }
+
+    internal class Vertex
+    {
+        public Vertex(String name)
+        {
+            this.Name = name;
+        }
+
+        public String Name { get; set; }
     }
 }
