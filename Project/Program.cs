@@ -5,6 +5,89 @@ using System.Xml;
 
 namespace Project
 {
+    /// <summary>
+    /// This class should be built in accordance to the project description pdf file.
+    ///
+    /// The denotations in the project description: Cycles = c Cycles.Count = |C| CycleLength = |c|
+    /// HyperCycle = C
+    /// </summary>
+    internal class Cycle
+    {
+        public Cycle(List<Message> messages)
+        {
+            this.CycleIndex = 0;
+            this.CycleLength = 0.012f; // 12us while messages period is in ms
+            this.HyperCycle = CalculateHyperCycle(messages);
+
+            // C / |c|
+            Cycles = new int[(int)(HyperCycle / CycleLength)];
+
+            // Initialize the Cycles
+            for (int i = 0; i < Cycles.Length; i++)
+            {
+                Cycles[i] = (int)(i * HyperCycle);
+            }
+        }
+
+        public int CycleIndex { get; set; }
+        public float CycleLength { get; }
+        public int[] Cycles { get; }
+        public long HyperCycle { get; }
+
+        public static long CalculateHyperCycle(List<Message> messages)
+        {
+            List<Message> copy = messages.ToList();
+
+            long lcm_of_array_elements = 1;
+            int divisor = 2;
+
+            while (true)
+            {
+                int counter = 0;
+                bool divisible = false;
+                for (int i = 0; i < copy.Count; i++)
+                {
+                    // lcm_of_array_elements (n1, n2, ... 0) = 0.
+                    if (copy[i].Period == 0)
+                    {
+                        return 0;
+                    }
+
+                    if (copy[i].Period == 1)
+                    {
+                        counter++;
+                    }
+
+                    // Divide element_array by devisor if complete division i.e. without remainder
+                    // then replace number with quotient; used for find next factor
+                    if (copy[i].Period % divisor == 0)
+                    {
+                        divisible = true;
+                        copy[i].Period = (uint)(copy[i].Period / divisor);
+                    }
+                }
+
+                // If divisor able to completely divide any number from array multiply with
+                // lcm_of_array_elements and store into lcm_of_array_elements and continue to same
+                // divisor for next factor finding. else increment divisor
+                if (divisible)
+                {
+                    lcm_of_array_elements = lcm_of_array_elements * divisor;
+                }
+                else
+                {
+                    divisor++;
+                }
+
+                // Check if all element_array is 1 indicate we found all factors and terminate while loop.
+                if (counter == copy.Count)
+                {
+                    return lcm_of_array_elements;
+                }
+            }
+        }
+    }
+
     internal class Edge
     {
         public Edge(String Id, uint BW, uint PropDelay, Vertex Source, Vertex Destination)
@@ -14,13 +97,27 @@ namespace Project
             this.PropDelay = PropDelay;
             this.Source = Source;
             this.Destination = Destination;
+
+            Queue = new();
+
+            // The following are only used if simulating a cycle
+            BW_Cylce_Transfer_Capacity = 0;  // The BW that a edge can transmit each cycle S in section 4
+            WC_Cycle_Delay = 0; // The maximum amount of delays that can occur D in section 4
+            Latency = 0; // Represented by Alpha in Section 4.2
+            BW_Consumption_Cycle = 0; // The consumed BW each cycle in section 4.2
         }
 
-        public uint BW { get; }
+        public uint BW { get; set; }
+        public uint BW_Consumption { get; set; }
+        public long BW_Consumption_Cycle { get; set; }
+        public uint BW_Cylce_Transfer_Capacity { get; set; }
         public Vertex Destination { get; }
         public String Id { get; }
-        public uint PropDelay { get; }
+        public int Latency { get; set; }
+        public uint PropDelay { get; set; }
+        public List<Message> Queue { get; set; }
         public Vertex Source { get; }
+        public uint WC_Cycle_Delay { get; set; }
 
         public static Edge GetEdgeFromVerticies(Vertex source, Vertex destination, List<Edge> edges)
         {
@@ -32,6 +129,28 @@ namespace Project
                 }
             }
             return null;
+        }
+
+        public void CalculateBW()
+        {
+            uint consumption = 0;
+
+            foreach (Message message in Queue)
+            {
+                consumption += message.Size;
+            }
+
+            BW_Consumption = consumption;
+        }
+
+        public void PrintEdge()
+        {
+            Console.WriteLine(Source.Name + " <=> " + Destination.Name);
+        }
+
+        public void PrintEdgeDetails()
+        {
+            Console.WriteLine("Edge ID= " + Id + " | " + Source.Name + " <=> " + Destination.Name + " | " + " PropDelay= " + PropDelay + " QueCount= " + Queue.Count + " BW= " + BW + " BWC= " + BW_Consumption);
         }
     }
 
@@ -45,21 +164,298 @@ namespace Project
             this.Size = size;
             this.Period = period;
             this.Deadline = deadline;
+
+            Path = new();
+
+            PossiblePaths = new();
+            PossibleVertexPaths = new();
+
+            Scheduled = false;
+
+            E2E = 0;
         }
 
         public uint Deadline { get; }
         public Vertex Destination { get; }
+        public long E2E { get; set; }
         public String Name { get; }
+
         public List<Edge> Path { get; set; }
-        public uint Period { get; }
+        public List<Vertex> PathVertex { get; set; }
+        public uint Period { get; set; }
+        public List<List<Edge>> PossiblePaths { get; set; }
+        public List<List<Vertex>> PossibleVertexPaths { get; set; }
+        public bool Scheduled { get; set; }
+
         public uint Size { get; }
+
         public Vertex Source { get; }
+
+        public void PathToVertexPath()
+        {
+            List<Vertex> vertices = new();
+
+            foreach (Edge edge in Path)
+            {
+                vertices.Add(edge.Source);
+                vertices.Add(edge.Destination);
+            }
+
+            vertices = vertices.Distinct().ToList();
+
+            bool found = false;
+
+            int index;
+
+            // Loop through all the possible Vertex Paths
+            foreach (List<Vertex> route in PossibleVertexPaths)
+            {
+                index = 0;
+
+                if (vertices.Count == route.Count)
+                {
+                    foreach (Vertex vertex in route)
+                    {
+                        if (vertex == vertices.ElementAt(index))
+                        {
+                            found = true;
+                        }
+                        else
+                        {
+                            found = false;
+                        }
+
+                        index++;
+                    }
+                }
+
+                if (found)
+                {
+                    PathVertex = route.ToList();
+                    break;
+                }
+            }
+        }
+
+        public void PrintPath()
+        {
+            Console.WriteLine("Showing path for message: " + Name);
+            Console.WriteLine("Message source to destination: " + Source.Name + " -> " + Destination.Name);
+            Console.WriteLine("Total Edges: " + Path.Count);
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine();
+
+            foreach (Edge edge in Path)
+            {
+                Console.WriteLine(edge.Source.Name + " <=> " + edge.Destination.Name);
+            }
+
+            Console.WriteLine();
+        }
+
+        public void PrintPossiblePaths()
+        {
+            int count_route = 0;
+
+            foreach (List<Edge> route in PossiblePaths)
+            {
+                count_route++;
+                Console.WriteLine("Route #" + count_route);
+                Console.WriteLine("Total Edges: " + route.Count);
+                Console.WriteLine("Visited Edges: ");
+
+                foreach (Edge edge in route)
+                {
+                    Console.WriteLine(edge.Source.Name + " <=> " + edge.Destination.Name);
+                }
+
+                Console.WriteLine();
+            }
+        }
+
+        public void PrintPossibleVertexPaths()
+        {
+            int count_route = 0;
+
+            foreach (List<Vertex> route in PossibleVertexPaths)
+            {
+                int count_vertex = 0;
+
+                count_route++;
+                Console.WriteLine("Route #" + count_route);
+                Console.WriteLine("Total Steps: " + route.Count);
+                Console.WriteLine("Visited Vertecies: ");
+
+                foreach (Vertex vertex in route)
+                {
+                    count_vertex++;
+
+                    if (count_vertex < route.Count)
+                    {
+                        Console.Write(vertex.Name + " -> ");
+                    }
+                    else
+                    {
+                        Console.Write(vertex.Name);
+                    }
+                }
+                Console.WriteLine();
+                Console.WriteLine();
+            }
+        }
+
+        public void PrintVertexPath()
+        {
+            int count_vertex = 0;
+
+            Console.WriteLine("Assigned Path");
+            Console.WriteLine("Total Steps: " + PathVertex.Count);
+            Console.WriteLine("Visited Vertecies: ");
+
+            foreach (Vertex vertex in PathVertex)
+            {
+                count_vertex++;
+
+                if (count_vertex < PathVertex.Count)
+                {
+                    Console.Write(vertex.Name + " -> ");
+                }
+                else
+                {
+                    Console.Write(vertex.Name);
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine();
+        }
+
+        public bool ReachedFinalDestination()
+        {
+            if (PathVertex.Count > 0
+                && PathVertex.First() == Source
+                && PathVertex.Last() == Destination)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void SetPath(List<Edge> path)
+        {
+            Path = path;
+            PathToVertexPath();
+        }
+
+        public void VertexPathsToEdgePaths(List<Edge> edges)
+        {
+            List<List<Edge>> possiblePaths = new();
+            List<Edge> path;
+
+            foreach (List<Vertex> route in PossibleVertexPaths)
+            {
+                path = new();
+
+                for (int i = 0; i < route.Count; i++)
+                {
+                    if (i < route.Count - 1)
+                    {
+                        path.Add(Edge.GetEdgeFromVerticies(route.ElementAt(i), route.ElementAt(i + 1), edges));
+                    }
+                }
+
+                possiblePaths.Add(path);
+            }
+
+            PossiblePaths = possiblePaths.ToList();
+        }
     }
 
     internal class Program
     {
-        // utility function for finding paths in graph from source to destination
-        public static List<List<Edge>> Findpaths(Vertex src, Vertex dst, List<Edge> edges)
+        public static void AssignNeighbors(Vertex vertex, List<Edge> edges)
+        {
+            List<Vertex> neighbors = new();
+            List<Edge> edgeNeighbors = new();
+
+            foreach (Edge edge in edges)
+            {
+                if (edge.Destination == vertex || edge.Source == vertex)
+                {
+                    edgeNeighbors.Add(edge);
+                }
+            }
+
+            //Console.WriteLine("Vector " + vertex.Name + " neighbors: ");
+            foreach (Edge edge in edgeNeighbors)
+            {
+                if (edge.Source != vertex)
+                {
+                    //Console.WriteLine(edge.Source.Name);
+                    neighbors.Add(edge.Source);
+                }
+
+                if (edge.Destination != vertex)
+                {
+                    //Console.WriteLine(edge.Destination.Name);
+                    neighbors.Add(edge.Destination);
+                }
+            }
+
+            vertex.Neighbors = neighbors.ToList();
+        }
+
+        public static void FindAllRoutes(List<Message> messages, List<Edge> edges, List<Vertex> vertices)
+        {
+            int count_messges = 0;
+
+            List<Vertex> visited;
+
+            foreach (Message message in messages)
+            {
+                visited = new();
+                visited.Add(message.Source);
+
+                if (count_messges % 2 == 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+
+                //Console.WriteLine();
+                //Console.WriteLine("Finding Routes for Message: " + message.Name);
+                //Console.WriteLine("Message source to destination: " + message.Source.Name + " -> " + message.Destination.Name);
+                //Console.WriteLine("------------------------------------------");
+
+                List<Vertex> pathList = new List<Vertex>();
+
+                // add source to path[]
+                pathList.Add(message.Source);
+
+                // Call recursive utility
+                FindPossiblePaths(message.Source, message.Destination, visited, pathList, message);
+
+                //message.PrintPossibleVertexPaths();
+
+                message.VertexPathsToEdgePaths(edges);
+
+                //message.PrintPossiblePaths();
+
+                count_messges++;
+
+                //Console.WriteLine("------------------------------------------");
+            }
+
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        // Does not work gives wrong paths
+        public static List<List<Edge>> Findpaths(Message message, List<Edge> edges)
         {
             // create a queue which stores the paths
             Queue<List<Vertex>> q = new();
@@ -68,7 +464,7 @@ namespace Project
             List<List<Vertex>> paths = new();
             List<List<Edge>> pathsEdges = new();
             List<Vertex> path = new();
-            path.Add(src);
+            path.Add(message.Source);
             q.Enqueue(path);
 
             while (q.Count != 0)
@@ -77,7 +473,7 @@ namespace Project
                 Vertex last = path[path.Count - 1];
 
                 // if last vertex is the desired destination then print the path
-                if (String.Equals(last, dst))
+                if (String.Equals(last, message.Destination))
                 {
                     paths.Add(path);
                     List<Edge> pathEdges = new();
@@ -104,7 +500,59 @@ namespace Project
                     }
                 }
             }
+
             return pathsEdges;
+        }
+
+        /// <summary>
+        /// This is a recursive function which will iterate through the origin vertex neighbors
+        /// until it finds the destination vertex. The Message sent in will be assigned its
+        /// PossibleVertexPaths list
+        /// </summary>
+        /// <param name="origin"> The origin vertex of the message </param>
+        /// <param name="destination"> The destination vertex of the message </param>
+        /// <param name="visited">
+        /// A list of visited vertex IMPORTANT INCLUDE THE MESSAGE ORIGIN already in there
+        /// </param>
+        /// <param name="localPathList"> A list that is developed as the method itterates </param>
+        /// <param name="message"> The message that will have its PossibleVertexPaths list updated </param>
+        public static void FindPossiblePaths(Vertex origin, Vertex destination, List<Vertex> visited, List<Vertex> localPathList, Message message)
+        {
+            if (origin.Equals(destination))
+            {
+                List<Vertex> possiblePath = new();
+
+                // Console.WriteLine("Path found for " + message.Name + ": ");
+                foreach (Vertex v in localPathList)
+                {
+                    possiblePath.Add(v);
+                }
+
+                message.PossibleVertexPaths.Add(possiblePath);
+
+                return;
+            }
+
+            // Mark the current node
+            visited.Add(origin);
+
+            // Recur for all the vertices adjacent to current vertex
+            foreach (Vertex vertex in origin.Neighbors)
+            {
+                if (!visited.Contains(vertex))
+                {
+                    // store current node in path[]
+                    localPathList.Add(vertex);
+
+                    FindPossiblePaths(vertex, destination, visited, localPathList, message);
+
+                    // remove current node in path[]
+                    localPathList.Remove(vertex);
+                }
+            }
+
+            // Mark the current node
+            visited.Remove(origin);
         }
 
         // utility function to check if current vertex is already present in path
@@ -298,15 +746,14 @@ namespace Project
                 Console.Write("Please Select the Topography Configuration you would like to use: ");
 
                 int response;
-                {
-                    string input;
 
+                string input;
+
+                input = Console.ReadLine();
+                while (!int.TryParse(input, out response))
+                {
+                    Console.WriteLine("Bad input");
                     input = Console.ReadLine();
-                    while (!int.TryParse(input, out response))
-                    {
-                        Console.WriteLine("Bad input");
-                        input = Console.ReadLine();
-                    }
                 }
 
                 switch (response)
@@ -446,6 +893,51 @@ namespace Project
             return messages;
         }
 
+        public static List<Vertex> TraverseToDestination(Vertex origin, Vertex destination, List<Edge> edges, List<Vertex> visited)
+        {
+            List<Edge> neighbors = new();
+
+            List<Vertex> visitedTemp = new();
+
+            if (origin == destination)
+            {
+                return visited;
+            }
+
+            Console.WriteLine("*********************");
+            Console.WriteLine("Finding Path: " + origin.Name + " -> " + destination.Name);
+            Console.WriteLine("Visited Vertecies: ");
+            foreach (Vertex vertex in visited)
+            {
+                Console.Write(vertex.Name + " ");
+            }
+            Console.WriteLine();
+            Console.WriteLine();
+
+            foreach (Edge edge in edges)
+            {
+                if (edge.Destination == origin || edge.Source == origin)
+                {
+                    neighbors.Add(edge);
+                }
+            }
+
+            Console.WriteLine("Vector " + origin.Name + " neighbors: ");
+            foreach (Edge edge in neighbors)
+            {
+                Console.WriteLine(edge.Destination.Name);
+                Console.WriteLine(edge.Source.Name);
+            }
+
+            // No Path has been found print Error!
+            ConsoleColor consoleColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("ERROR: TraverseToDestination could not find a path from " + origin.Name + " -> " + destination.Name);
+            Console.ForegroundColor = consoleColor;
+
+            return visited;
+        }
+
         private static void Main()
         {
             string PATH = "..\\..\\..\\..\\..\\test_cases";
@@ -477,7 +969,10 @@ namespace Project
                     }
                 default:
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("ERROR: response from menuSize() not recognized!");
+                        Console.ForegroundColor = ConsoleColor.White;
+
                         PATH += "\\Medium";
                         ITERATION_BUFFER = 1234;
                         break;
@@ -488,7 +983,10 @@ namespace Project
             string TC = menuTopography(size);
             if (TC == "error")
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine("ERROR: response from menuTopography() not recognized!");
+                Console.ForegroundColor = ConsoleColor.White;
+                return;
             }
             else
             {
@@ -505,11 +1003,17 @@ namespace Project
             (List<Vertex> vertices, List<Edge> edges) = ParseArchiteure(PATH + "Config.xml");
             List<Message> messages = ParseMessageXml(PATH + "Apps.xml", vertices);
 
-            Dictionary<Message, List<List<Edge>>> message_routes = new Dictionary<Message, List<List<Edge>>>();
-            foreach (Message message in messages)
+            Cycle cycle = new(messages);
+
+            Console.WriteLine();
+            Console.WriteLine("HyperCycle: " + cycle.HyperCycle);
+
+            foreach (Vertex vertex in vertices)
             {
-                message_routes.Add(message, Findpaths(message.Source, message.Destination, edges));       // create a list with all routes possible for every message
+                AssignNeighbors(vertex, edges);
             }
+
+            FindAllRoutes(messages, edges, vertices);
 
             // Sets up the program by asking what solver method to use.
             string MODE = menuSolution();
@@ -517,7 +1021,7 @@ namespace Project
             {
                 case "Simmulated Annealing":
                     {
-                        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(messages, vertices, edges, message_routes);
+                        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(messages, vertices, edges, ITERATION_BUFFER, cycle);
 
                         simulatedAnnealing.Solve();
 
@@ -534,9 +1038,9 @@ namespace Project
                     }
                 default:
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("ERROR: response from menuSolution() not recognized!");
-                        PATH += "\\Medium";
-                        ITERATION_BUFFER = 1234;
+                        Console.ForegroundColor = ConsoleColor.White;
                         break;
                     }
             }
@@ -548,8 +1052,10 @@ namespace Project
         public Vertex(String name)
         {
             this.Name = name;
+            Neighbors = new();
         }
 
         public String Name { get; set; }
+        public List<Vertex> Neighbors { get; set; }
     }
 }

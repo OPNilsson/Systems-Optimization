@@ -34,3 +34,10 @@ Project/obj/x64/Debug/net5.0/Project.csproj.FileListAbsolute.txt
 Project/obj/x64/Debug/net5.0/Project.pdb
 Project/obj/x64/Debug/net5.0/Project.dll
 *.pdb
+.vs/Project/v16/.suo
+*.dll
+*.pdb
+*.dll
+Project/obj/x64/Debug/net5.0/Project.dll
+Project/obj/x64/Debug/net5.0/Project.pdb
+Project/obj/x64/Debug/net5.0/ref/Project.dll
