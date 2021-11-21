@@ -10,97 +10,276 @@ namespace Project
 {
     internal class SimulatedAnnealing
     {
-        private const int MAX_QUE_COUNT = 3;
+        public const int MAX_ITERATIONS = 151000;
 
+        public const int MAX_QUE_COUNT = 3;
+        public const double MIN_TEMPERATURE = 0.0001;
+        public long bestMeanBW = 0;
+        public DateTime endTime;
+        public DateTime startTime;
+        private double coolingRate = 0.9995;
         private Cycle Cycle;
+
+        private bool debug = true;
+
         private List<Edge> edges;
+
+        private int iteration = 0;
         private int ITERATION_BUFFER;
         private List<Message> messages;
-        private List<Vertex> vertices;
+        private double temperature = 1000.0; // As suggested in the lecture slides
 
-        public SimulatedAnnealing(List<Message> messages, List<Vertex> vertices, List<Edge> edges, int ITERATION_BUFFER, Cycle cycle)
+        public SimulatedAnnealing(List<Message> messages, List<Edge> edges, Cycle cycle, int ITERATION_BUFFER)
         {
             this.messages = messages;
-            this.vertices = vertices;
             this.edges = edges;
             this.ITERATION_BUFFER = ITERATION_BUFFER;
             this.Cycle = cycle;
+
+            this.startTime = DateTime.Now;
         }
 
-        public void Solve()
+        public static double acceptingProbability(long MBW, long adjMBW, double temperature)
         {
+            if (adjMBW > MBW)
+                return 1.0;
+            else
+                return Math.Exp((MBW - adjMBW) / temperature);
+        }
+
+        public void ChangePath()
+        {
+            // Changes the path of a message
+            //MovePathLowestBW();
+
+            PickNewPath();
+
+            // If not all messages reach deadline try and simulate another que cycle
+            while (!DeadlineConstraint() || !LinkCapactiyConstraint())
+            {
+                // Print a dot to show that the iteration is working
+                //if (Cycle.CycleIndex % 100 == 0) Console.Write(" .");
+
+                // Simulate a Cycle
+                CyclicQ();
+
+                if (Cycle.Cycles.Count() <= Cycle.CycleIndex) break;
+
+                if (AllMessagesScheduled()) break;
+            }
+        }
+
+        public bool Solve()
+        {
+            Cycle OriginalCycle = Cycle;
+
             PrintFindingSolution(false);
 
             // Transform the problem into a cycle based system instead of time as defined in Section
             // 4 of project description
-            CycleDomainTransformation(edges);
+            CycleDomainTransformation();
 
             // Get initial Arrival Pattern as defined in Section 4 of project description
-            List<Message> arrivalPattern = CalculateArrivalPattern();
-
-            int count = 0;
-
-            bool passedLink = false;
-            bool passedDead = false;
+            List<Message> arrivalPattern = CalculateArrivalPattern(messages, edges, Cycle);
 
             // Find an initial solution by iterating ques and assigning message routes in cycles
-            while (!passedLink || !passedDead)
+            while (!LinkCapactiyConstraint() || !DeadlineConstraint() || !AllMessagesScheduled())
             {
                 PrintFindingSolution(false);
 
                 // For an initial assignation for message routes
                 messages = EariliestDeadlineFirst(arrivalPattern);
 
-                MovePathLowestBW();
+                // Simulate a Cycle
+                CyclicQ();
 
-                count++;
-
-                passedLink = LinkCapactiyConstraint();
-                passedDead = DeadlineConstraint();
+                if (Cycle.Cycles.Count() <= Cycle.CycleIndex) return false;
             }
 
             PrintFindingSolution(true);
 
-            Console.WriteLine(count);
-            return;
+            Console.WriteLine("Cycles for solution: " + Cycle.CycleIndex);
 
-            // Simulate a Cycle
-            CyclicQ(messages, edges);
+            debug = false;
 
-            return;
+            // Assign Best Solution
+            List<Message> BestMessages = messages;
+            List<Edge> BestEdges = edges;
+            Cycle BestCycle = Cycle;
+
+            // Assign Best Objective Variable
+            long bestMeanBw = CalculateMeanBW();
+
+            // Simmulated Annealing Variables
+            long meanBW = bestMeanBw;
+            int solutionsFound = 0;
+            var random = new Random();
+
+            // Save Originals to come up with a new solution during Algorithim execution
+            List<Message> OriginalMessages = messages;
+            List<Edge> OriginalEdges = edges;
+
+            // Start of Simmulated Annealing Algorithim
+            while (iteration < MAX_ITERATIONS && temperature > MIN_TEMPERATURE)
+            {
+                // Adds a buffering effect to know if computing
+                if (iteration % ITERATION_BUFFER == 0) { Console.Clear(); Console.WriteLine("Current iteration: " + iteration); }
+
+                // Move a message with the highest BW to a route with the lowest BW
+                ChangePath();
+
+                // Uses the constraints for a solution as described in sections 4.0-4.2 of the
+                // project description
+                if (LinkCapactiyConstraint() && DeadlineConstraint() && AllMessagesScheduled() && QueMax())
+                {
+                    ++solutionsFound;
+
+                    // Compute laxity of adjacent state.
+                    long meanBW_Neighbor = CalculateMeanBW();
+
+                    // Check if new solution is new best. A solution is described to be better in
+                    // 4.3 of the project description if the meanBW is lower
+                    if (meanBW_Neighbor < bestMeanBw)
+                    {
+                        // Assign Best Solution
+                        BestMessages = messages;
+                        BestEdges = edges;
+                        BestCycle = Cycle;
+
+                        bestMeanBw = meanBW_Neighbor;
+                    }
+
+                    // If neighbor solution is better, accept solution. Otherwise accept with
+                    // varying probability.
+                    double p = random.NextDouble();
+                    if (acceptingProbability(meanBW, meanBW_Neighbor, temperature) > p)
+                    {
+                        meanBW = meanBW_Neighbor;
+
+                        OriginalCycle = Cycle;
+                        OriginalEdges = edges;
+                        OriginalMessages = messages;
+                    }
+
+                    // End Iteration by cooling
+                    temperature = temperature * coolingRate; // TODO: Make the cooling schedule not fixed?
+                }
+                else
+                {
+                    Cycle = OriginalCycle;
+                    edges = OriginalEdges;
+                    messages = OriginalMessages;
+                }
+
+                ++iteration;
+            }
+
+            endTime = DateTime.Now;
+
+            Console.Clear();
+
+            // Check why the simulated annealing ended
+            if (temperature < MIN_TEMPERATURE)
+            {
+                Console.WriteLine("Temperature fell below accepted MIN! Ending Simulated Annealing!");
+                Console.WriteLine("Temperature: " + temperature);
+                Console.WriteLine("MIN TEMP:    " + MIN_TEMPERATURE);
+                Console.WriteLine();
+            }
+            else if (iteration == MAX_ITERATIONS)
+            {
+                Console.WriteLine("Iteration Limit Hit! Ending Simulated Annealing!");
+                Console.WriteLine("Iteration:       " + iteration);
+                Console.WriteLine("Max Iterations:  " + MAX_ITERATIONS);
+                Console.WriteLine();
+            }
+
+            // Give some statistics
+            Console.WriteLine("Ran for " + (endTime - startTime).TotalMilliseconds + " ms");
+            Console.WriteLine("Ran for {0} iterations", iteration);
+            Console.WriteLine("Total Solutions found: " + solutionsFound);
+            Console.WriteLine("Solution Cycles: " + BestCycle.CycleIndex);
+
+            Console.WriteLine();
+
+            foreach (Message message in BestMessages)
+            {
+                message.PathToVertexPath();
+                message.PrintVertexPath();
+            }
+
+            foreach (Edge edge in BestEdges)
+            {
+                while (edge.BW_Consumption > edge.BW)
+                {
+                    CyclicQ();
+
+                    edge.PrintEdgeDetails();
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine("Solution Cycles: " + BestCycle.CycleIndex);
+
+            return true;
+        }
+
+        private bool AllMessagesScheduled()
+        {
+            ConsoleColor consoleColor = Console.ForegroundColor;
+
+            foreach (Message message in messages)
+            {
+                if (!message.Scheduled)
+                {
+                    if (debug) Console.ForegroundColor = ConsoleColor.DarkRed;
+                    if (debug) Console.WriteLine("Message " + message.Name + " NOT Scheduled!");
+                    if (debug) Console.ForegroundColor = consoleColor;
+
+                    return false;
+                }
+            }
+
+            if (debug) Console.ForegroundColor = ConsoleColor.DarkGreen;
+
+            if (debug) Console.WriteLine("All Messages Scheduled!");
+
+            if (debug) Console.ForegroundColor = consoleColor;
+
+            return true;
         }
 
         private uint ArrivalPattern(Message message, int offset)
         {
             ConsoleColor consoleColor = Console.ForegroundColor;
 
-            Console.WriteLine();
-            Console.WriteLine("Finding A of Message " + message.Name + ": ");
+            if (debug) Console.WriteLine();
+            if (debug) Console.WriteLine("Finding A of Message " + message.Name + ": ");
 
-            if ((offset * Cycle.CycleLength % message.Period) == 0)
+            if ((Cycle.Cycles[Cycle.CycleIndex] * Cycle.CycleLength % message.Period) == 0)
             {
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
+                if (debug) Console.ForegroundColor = ConsoleColor.DarkGreen;
 
-                Console.WriteLine("Result of " + offset + " * " + Cycle.CycleLength + " % " + message.Period + " == 0 was TRUE!");
-                Console.WriteLine("A = " + (message.Size - offset));
+                if (debug) Console.WriteLine("Result of " + Cycle.Cycles[Cycle.CycleIndex] + " * " + Cycle.CycleLength + " % " + message.Period + " == 0 was TRUE!");
+                if (debug) Console.WriteLine("A = " + (message.Size - offset));
 
-                Console.ForegroundColor = consoleColor;
+                if (debug) Console.ForegroundColor = consoleColor;
 
-                return (uint)(message.Size);
+                return (uint)(message.Size - offset);
             }
             else
             {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine("Result of " + offset + " * " + Cycle.CycleLength + " % " + message.Period + " == 0 was FASLE!");
-                Console.WriteLine("A = 0");
+                if (debug) Console.ForegroundColor = ConsoleColor.DarkRed;
+                if (debug) Console.WriteLine("Result of " + Cycle.Cycles[Cycle.CycleIndex] + " * " + Cycle.CycleLength + " % " + message.Period + " == 0 was FASLE!");
+                if (debug) Console.WriteLine("A = 0");
 
-                Console.ForegroundColor = consoleColor;
+                if (debug) Console.ForegroundColor = consoleColor;
 
                 return 0;
             }
         }
 
-        private List<Message> CalculateArrivalPattern()
+        private List<Message> CalculateArrivalPattern(List<Message> messages, List<Edge> edges, Cycle cycle)
         {
             // Defined as A in the project description
             LinkedList<Message> arrival_pattern = new();
@@ -115,9 +294,9 @@ namespace Project
 
                 Console.WriteLine("Finding Arrival for " + message.Name);
 
-                if ((Cycle.Cycles[Cycle.CycleIndex] * Cycle.CycleLength % message.Period) == 0)
+                if ((cycle.Cycles[cycle.CycleIndex] * cycle.CycleLength % message.Period) == 0)
                 {
-                    Console.WriteLine("Result of " + Cycle.Cycles[Cycle.CycleIndex] + " * " + Cycle.CycleLength + " % " + message.Period + " == 0 was true!");
+                    Console.WriteLine("Result of " + cycle.Cycles[cycle.CycleIndex] + " * " + cycle.CycleLength + " % " + message.Period + " == 0 was true!");
 
                     Message previous = arrival_pattern.FirstOrDefault();
 
@@ -163,7 +342,19 @@ namespace Project
             return arrival_pattern.ToList();
         }
 
-        private void CycleDomainTransformation(List<Edge> edges)
+        private long CalculateMeanBW()
+        {
+            uint totalBW = 0;
+
+            foreach (Edge edge in edges)
+            {
+                totalBW += edge.BW_Consumption;
+            }
+
+            return totalBW / edges.Count;
+        }
+
+        private void CycleDomainTransformation()
         {
             foreach (Edge edge in edges)
             {
@@ -177,19 +368,35 @@ namespace Project
             }
         }
 
-        private void CyclicQ(List<Message> messages, List<Edge> edges)
+        private void CyclicQ()
         {
             Cycle.CycleIndex++;
 
             if (Cycle.Cycles.Count() >= Cycle.CycleIndex)
             {
+                foreach (Edge edge in edges)
+                {
+                    if (edge.Queue.Count > 0)
+                    {
+                        edge.Queue.Remove(edge.Queue[0]);
+
+                        edge.CalculateBW(); // Update the BW_Consumption
+                    }
+
+                    if (edge.QueueBackwards.Count > 0)
+                    {
+                        edge.QueueBackwards.Remove(edge.QueueBackwards[0]);
+
+                        edge.CalculateBW(); // Update the BW_Consumption
+                    }
+                }
             }
             else
             {
                 ConsoleColor console = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Error: No more cycles allowed in this solution! Max Cycles = " + Cycle.Cycles.Count());
-                Console.ForegroundColor = console;
+                if (debug) Console.ForegroundColor = ConsoleColor.Red;
+                if (debug) Console.WriteLine("Error: No more cycles allowed in this solution! Max Cycles = " + Cycle.Cycles.Count());
+                if (debug) Console.ForegroundColor = console;
             }
         }
 
@@ -197,7 +404,7 @@ namespace Project
         {
             bool passed = false;
 
-            Console.WriteLine();
+            if (debug) Console.WriteLine();
 
             ConsoleColor consoleColor = Console.ForegroundColor;
 
@@ -207,9 +414,9 @@ namespace Project
 
                 if (message.Path.Count <= 0)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("FAILED DeadlineConstraint! ( Message " + message.Name + " has no Path!)");
-                    Console.ForegroundColor = consoleColor;
+                    if (debug) Console.ForegroundColor = ConsoleColor.DarkRed;
+                    if (debug) Console.WriteLine("FAILED DeadlineConstraint! ( Message " + message.Name + " has no Path!)");
+                    if (debug) Console.ForegroundColor = consoleColor;
                     return false;
                 }
 
@@ -217,9 +424,20 @@ namespace Project
                 {
                     int q_index = 0;
 
-                    if (edge.Queue.Count > 0)
+                    // Has to check which direction Queue to check
+                    if (message.Backwards)
                     {
-                        q_index = edge.Queue.IndexOf(message);
+                        if (edge.QueueBackwards.Count > 0)
+                        {
+                            q_index = edge.QueueBackwards.IndexOf(message);
+                        }
+                    }
+                    else
+                    {
+                        if (edge.Queue.Count > 0)
+                        {
+                            q_index = edge.Queue.IndexOf(message);
+                        }
                     }
 
                     e2e += edge.PropDelay + q_index;
@@ -230,16 +448,16 @@ namespace Project
                 // The condition of the Deadline Constraint as defined in section 4.1
                 if (e2e <= message.Deadline)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine("Message " + message.Name + " PASSED DeadlineConstraint! ( " + e2e + " <= " + message.Deadline + " )");
-                    Console.ForegroundColor = consoleColor;
+                    if (debug) Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    if (debug) Console.WriteLine("Message " + message.Name + " PASSED DeadlineConstraint! ( " + e2e + " <= " + message.Deadline + " )");
+                    if (debug) Console.ForegroundColor = consoleColor;
                     passed = true;
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("Message " + message.Name + " FAILED DeadlineConstraint! ( " + e2e + " <= " + message.Deadline + " )");
-                    Console.ForegroundColor = consoleColor;
+                    if (debug) Console.ForegroundColor = ConsoleColor.DarkRed;
+                    if (debug) Console.WriteLine("Message " + message.Name + " FAILED DeadlineConstraint! ( " + e2e + " <= " + message.Deadline + " )");
+                    if (debug) Console.ForegroundColor = consoleColor;
                     return false;
                 }
             }
@@ -273,9 +491,9 @@ namespace Project
                 }
             }
 
-            Console.WriteLine("Scheduled Messages: " + scheduled);
-            Console.WriteLine("Unscheduled Messages: " + (messages.Count - scheduled));
-            Console.WriteLine();
+            if (debug) Console.WriteLine("Scheduled Messages: " + scheduled);
+            if (debug) Console.WriteLine("Unscheduled Messages: " + (messages.Count - scheduled));
+            if (debug) Console.WriteLine();
 
             // Sort into ascending order
             unscheduled.Sort((x, y) => x.Deadline.CompareTo(y.Deadline)); // Sort based on deadline
@@ -287,28 +505,50 @@ namespace Project
                 priorityEdges = new();
 
                 ConsoleColor consoleColor = Console.ForegroundColor;
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("*********************************************");
-                Console.WriteLine("Edges that should take priority for message " + message.Name);
-                Console.WriteLine("Edges with BW_Cons <= " + highestBW);
-                Console.WriteLine("Edges with Queues <= " + lowestQCount);
-                Console.WriteLine();
+                if (debug) Console.ForegroundColor = ConsoleColor.Yellow;
+                if (debug) Console.WriteLine("*********************************************");
+                if (debug) Console.WriteLine("Edges that should take priority for message " + message.Name);
+                if (debug) Console.WriteLine("Edges with BW_Cons <= " + highestBW);
+                if (debug) Console.WriteLine("Edges with Queues <= " + lowestQCount);
+                if (debug) Console.WriteLine();
 
-                // Get the lowest Queue number
-                lowestQCount = edges.Min(e => e.Queue.Count);
+                // Get the lowest Queue number for the direction of the message
+                if (message.Backwards)
+                {
+                    lowestQCount = edges.Min(e => e.QueueBackwards.Count);
+                }
+                else
+                {
+                    lowestQCount = edges.Min(e => e.Queue.Count);
+                }
+
                 highestBW = edges.Max(e => e.BW_Consumption);
 
                 // Check which edges should take priority to be assigned a new message
                 foreach (Edge edge in edges)
                 {
-                    if (edge.Queue.Count <= lowestQCount
+                    // Get the right parameters based on the direction of the message
+                    if (message.Backwards)
+                    {
+                        if (edge.QueueBackwards.Count <= lowestQCount
+                        && (edge.BW_Consumption + message.Size) < edge.BW
+                        && (edge.QueueBackwards.Count + 1 <= MAX_QUE_COUNT)
+                        && (edge.BW_Consumption) <= highestBW)
+                        {
+                            if (debug) edge.PrintEdge();
+                            priorityEdges.Add(edge);
+                        }
+                    }
+                    else
+                    {
+                        if (edge.Queue.Count <= lowestQCount
                         && (edge.BW_Consumption + message.Size) < edge.BW
                         && (edge.Queue.Count + 1 <= MAX_QUE_COUNT)
                         && (edge.BW_Consumption) <= highestBW)
-                    {
-                        edge.PrintEdge();
-                        priorityEdges.Add(edge);
-                        break; // An edge has been found an thus a path using this edge will take priority
+                        {
+                            if (debug) edge.PrintEdge();
+                            priorityEdges.Add(edge);
+                        }
                     }
                 }
 
@@ -337,34 +577,57 @@ namespace Project
                         // Update the queues on each edge visited
                         foreach (Edge edge in message.Path)
                         {
-                            edge.Queue.Add(message);
+                            if (message.Backwards)
+                            {
+                                edge.QueueBackwards.Add(message);
+                                message.QueNumber = edge.QueueBackwards.Count;
+                            }
+                            else
+                            {
+                                edge.Queue.Add(message);
+                                message.QueNumber = edge.Queue.Count;
+                            }
+
                             edge.CalculateBW(); // Update the BW_Consumption
                         }
 
                         scheduled++;
                         message.Scheduled = true;
 
-                        Console.WriteLine();
-                        message.PrintPath();
+                        if (debug) Console.WriteLine();
+                        if (debug) message.PrintPath();
 
                         break; // Once the message has been scheduled a path then move on to the next message
                     }
                 }
 
-                Console.WriteLine("*********************************************");
-                Console.WriteLine();
-                Console.ForegroundColor = consoleColor;
+                if (debug) Console.WriteLine("*********************************************");
+                if (debug) Console.WriteLine();
+                if (debug) Console.ForegroundColor = consoleColor;
             }
 
-            foreach (Edge edge in edges)
+            if (debug)
             {
-                edge.PrintEdgeDetails();
+                foreach (Edge edge in edges)
+                {
+                    edge.PrintEdgeDetails();
+                }
             }
-            Console.WriteLine();
 
-            Console.WriteLine("Scheduled Messages: " + scheduled);
-            Console.WriteLine("Unscheduled Messages: " + (messages.Count - scheduled));
-            Console.WriteLine();
+            if (debug) Console.WriteLine();
+            if (debug) Console.WriteLine("Scheduled Messages: " + scheduled);
+            if (debug) Console.WriteLine("Unscheduled Messages: " + (messages.Count - scheduled));
+            if (debug) Console.WriteLine();
+            if (debug)
+            {
+                foreach (Message m in messages)
+                {
+                    if (!m.Scheduled)
+                    {
+                        Console.WriteLine("Message " + m.Name + " unscheduled!");
+                    }
+                }
+            }
 
             return messages;
         }
@@ -378,23 +641,31 @@ namespace Project
             {
                 int latency = (int)edge.WC_Cycle_Delay;
 
-                if (edge.Queue.Count > 0)
+                if (edge.Queue.Count > 0 || edge.QueueBackwards.Count > 0)
                 {
                     int q_Num = 0;
 
                     foreach (Message message in edge.Queue)
                     {
                         q_Num++;
-                        latency += ((int)(edge.WC_Cycle_Delay + q_Num));
+                        latency += q_Num;
+                    }
+
+                    q_Num = 0;
+
+                    foreach (Message message in edge.QueueBackwards)
+                    {
+                        q_Num++;
+                        latency += q_Num;
                     }
                 }
 
-                Console.WriteLine("Latency for Edge " + edge.Id + ": " + latency);
+                if (debug) Console.WriteLine("Latency for Edge " + edge.Id + ": " + latency);
 
                 edge.Latency = latency;
             }
 
-            Console.WriteLine();
+            if (debug) Console.WriteLine();
 
             // Calculate Consumed BW in each cycle
             foreach (Edge edge in edges)
@@ -403,31 +674,37 @@ namespace Project
 
                 foreach (Message message in edge.Queue)
                 {
-                    cBW += ArrivalPattern(message, Cycle.Cycles[Cycle.CycleIndex] - edge.Latency);
+                    cBW += ArrivalPattern(message, 0);
+                }
+
+                foreach (Message message in edge.QueueBackwards)
+                {
+                    cBW += ArrivalPattern(message, 0);
                 }
 
                 edge.BW_Consumption_Cycle = cBW;
 
-                Console.WriteLine("ConsumedBW for Edge " + edge.Id + ": " + cBW);
+                if (debug) Console.WriteLine("ConsumedBW for Edge " + edge.Id + ": " + cBW);
             }
 
             ConsoleColor consoleColor = Console.ForegroundColor;
-            Console.WriteLine();
+            if (debug) Console.WriteLine();
 
             foreach (Edge edge in edges)
             {
-                if (edge.BW_Consumption_Cycle <= edge.BW_Cylce_Transfer_Capacity)
+                // BW_Cycle_Transfer is in Bytes while BW_Comsumption is in bits
+                if (edge.BW_Consumption_Cycle <= edge.BW_Cylce_Transfer_Capacity * 125000)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine("Edge " + edge.Id + " PASSED LinkeCapacityConstraint! ( " + edge.BW_Consumption_Cycle + " <= " + edge.BW_Cylce_Transfer_Capacity + " )");
-                    Console.ForegroundColor = consoleColor;
+                    if (debug) Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    if (debug) Console.WriteLine("Edge " + edge.Id + " PASSED LinkeCapacityConstraint! ( " + edge.BW_Consumption_Cycle + " <= " + edge.BW_Cylce_Transfer_Capacity * 125000 + " )");
+                    if (debug) Console.ForegroundColor = consoleColor;
                     passed = true;
                 }
                 else
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.WriteLine("Edge " + edge.Id + " FAILED LinkeCapacityConstraint! ( " + edge.BW_Consumption_Cycle + " <= " + edge.BW_Cylce_Transfer_Capacity + " )");
-                    Console.ForegroundColor = consoleColor;
+                    if (debug) Console.ForegroundColor = ConsoleColor.DarkRed;
+                    if (debug) Console.WriteLine("Edge " + edge.Id + " FAILED LinkeCapacityConstraint! ( " + edge.BW_Consumption_Cycle + " <= " + edge.BW_Cylce_Transfer_Capacity * 125000 + " )");
+                    if (debug) Console.ForegroundColor = consoleColor;
                     passed = false;
                 }
 
@@ -449,30 +726,32 @@ namespace Project
 
             List<Edge> pathToAssign = new();
 
+            Message temp = messages[0];
+
             Edge lowestBWEdge = edges[0];
             Edge highestBWEdge = edges[0];
 
-            Console.WriteLine();
+            if (debug) Console.WriteLine();
 
             ConsoleColor consoleColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("*********************************************");
-            Console.WriteLine("Edges that should take priority for the Swap");
-            Console.WriteLine("Edges with BW_Cons = " + lowestBW);
-            Console.WriteLine("Edges with BW_Cons = " + highestBW);
-            Console.WriteLine();
+            if (debug) Console.ForegroundColor = ConsoleColor.Blue;
+            if (debug) Console.WriteLine("*********************************************");
+            if (debug) Console.WriteLine("Edges that should take priority for the Swap");
+            if (debug) Console.WriteLine("Edges with BW_Cons = " + lowestBW);
+            if (debug) Console.WriteLine("Edges with BW_Cons = " + highestBW);
+            if (debug) Console.WriteLine();
 
             // Check which edges should take priority to be assigned a new message
             foreach (Edge edge in edges)
             {
                 if (edge.BW_Consumption <= lowestBW)
                 {
-                    edge.PrintEdgeDetails();
+                    if (debug) edge.PrintEdgeDetails();
                     lowestBWEdge = edge;
                 }
                 else if (edge.BW_Consumption >= highestBW)
                 {
-                    edge.PrintEdgeDetails();
+                    if (debug) edge.PrintEdgeDetails();
                     highestBWEdge = edge;
                 }
             }
@@ -490,25 +769,101 @@ namespace Project
                             && !path.Contains(highestBWEdge)
                             && path != message.Path)
                         {
-                            Console.WriteLine("Message " + message.Name + " changed Path from: ");
-                            message.PrintPath();
+                            temp = message;
 
-                            message.Path = path;
+                            if (debug) Console.WriteLine("Message " + message.Name + " changed Path from: ");
+                            if (debug) message.PrintPath();
 
-                            Console.WriteLine();
-                            Console.WriteLine("To: ");
-                            message.PrintPath();
+                            pathToAssign = path;
+
+                            if (debug) Console.WriteLine();
+                            if (debug) Console.WriteLine("To: ");
+                            if (debug) message.PrintPath();
 
                             moved = true;
 
                             break;
                         }
+
+                        if (moved) break;
                     }
                 }
             }
 
-            Console.WriteLine();
-            Console.ForegroundColor = consoleColor;
+            temp.SetPath(pathToAssign);
+
+            // Update the effect of the network
+            foreach (Edge edge in temp.Path)
+            {
+                if (temp.Backwards)
+                {
+                    edge.QueueBackwards.Add(temp);
+                    temp.QueNumber = edge.QueueBackwards.Count;
+                }
+                else
+                {
+                    edge.Queue.Add(temp);
+                    temp.QueNumber = edge.Queue.Count;
+                }
+
+                edge.CalculateBW();
+            }
+
+            if (debug) Console.WriteLine();
+            if (debug) Console.ForegroundColor = consoleColor;
+        }
+
+        private void PickNewPath()
+        {
+            var random = new Random();
+
+            int index = random.Next(0, messages.Count);
+            int index_path = random.Next(0, messages[index].PossiblePaths.Count);
+
+            Message message = messages[index];
+
+            if (debug) Console.WriteLine();
+
+            ConsoleColor consoleColor = Console.ForegroundColor;
+            if (debug) Console.ForegroundColor = ConsoleColor.Blue;
+            if (debug) Console.WriteLine("*********************************************");
+            if (debug) Console.WriteLine("Changing Path of Message " + message.Name + "!");
+            if (debug) Console.WriteLine("Random Index of path = " + index_path);
+            if (debug) Console.WriteLine();
+
+            // Remove the current effect on the network
+            foreach (Edge edge in message.Path)
+            {
+                if (message.Backwards)
+                {
+                    edge.QueueBackwards.Remove(message);
+                }
+                else
+                {
+                    edge.Queue.Remove(message);
+                }
+
+                edge.CalculateBW();
+            }
+
+            message.SetPath(message.PossiblePaths[index_path]);
+
+            // Update the effect of the network
+            foreach (Edge edge in message.Path)
+            {
+                if (message.Backwards)
+                {
+                    edge.QueueBackwards.Add(message);
+                    message.QueNumber = edge.QueueBackwards.Count;
+                }
+                else
+                {
+                    edge.Queue.Add(message);
+                    message.QueNumber = edge.Queue.Count;
+                }
+
+                edge.CalculateBW();
+            }
         }
 
         private void PrintFindingSolution(bool found)
@@ -531,6 +886,25 @@ namespace Project
             Console.ForegroundColor = consoleColor;
 
             Console.WriteLine();
+        }
+
+        private bool QueMax()
+        {
+            bool passed = false;
+
+            foreach (Message message in messages)
+            {
+                if (message.QueNumber <= MAX_QUE_COUNT)
+                {
+                    passed = true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return passed;
         }
     }
 }

@@ -99,6 +99,7 @@ namespace Project
             this.Destination = Destination;
 
             Queue = new();
+            QueueBackwards = new();
 
             // The following are only used if simulating a cycle
             BW_Cylce_Transfer_Capacity = 0;  // The BW that a edge can transmit each cycle S in section 4
@@ -116,6 +117,7 @@ namespace Project
         public int Latency { get; set; }
         public uint PropDelay { get; set; }
         public List<Message> Queue { get; set; }
+        public List<Message> QueueBackwards { get; set; }
         public Vertex Source { get; }
         public uint WC_Cycle_Delay { get; set; }
 
@@ -140,6 +142,11 @@ namespace Project
                 consumption += message.Size;
             }
 
+            foreach (Message message in QueueBackwards)
+            {
+                consumption += message.Size;
+            }
+
             BW_Consumption = consumption;
         }
 
@@ -150,7 +157,7 @@ namespace Project
 
         public void PrintEdgeDetails()
         {
-            Console.WriteLine("Edge ID= " + Id + " | " + Source.Name + " <=> " + Destination.Name + " | " + " PropDelay= " + PropDelay + " QueCount= " + Queue.Count + " BW= " + BW + " BWC= " + BW_Consumption);
+            Console.WriteLine("Edge ID= " + Id + " | " + Source.Name + " <=> " + Destination.Name + " | " + " Latency= " + Latency + " QueCount= " + Queue.Count + " BQueCount= " + QueueBackwards.Count + " BW= " + BW + " BWC= " + BW_Consumption);
         }
     }
 
@@ -173,18 +180,21 @@ namespace Project
             Scheduled = false;
 
             E2E = 0;
+
+            QueNumber = 0;
         }
 
+        public bool Backwards { get; set; }
         public uint Deadline { get; }
         public Vertex Destination { get; }
         public long E2E { get; set; }
         public String Name { get; }
-
         public List<Edge> Path { get; set; }
         public List<Vertex> PathVertex { get; set; }
         public uint Period { get; set; }
         public List<List<Edge>> PossiblePaths { get; set; }
         public List<List<Vertex>> PossibleVertexPaths { get; set; }
+        public int QueNumber { get; set; }
         public bool Scheduled { get; set; }
 
         public uint Size { get; }
@@ -242,6 +252,7 @@ namespace Project
             Console.WriteLine("Showing path for message: " + Name);
             Console.WriteLine("Message source to destination: " + Source.Name + " -> " + Destination.Name);
             Console.WriteLine("Total Edges: " + Path.Count);
+            Console.WriteLine("Que Number: " + QueNumber);
             Console.WriteLine("------------------------------------------");
             Console.WriteLine();
 
@@ -308,9 +319,12 @@ namespace Project
         {
             int count_vertex = 0;
 
-            Console.WriteLine("Assigned Path");
+            Console.WriteLine("Showing path for message: " + Name);
+            Console.WriteLine("Message source to destination: " + Source.Name + " -> " + Destination.Name);
             Console.WriteLine("Total Steps: " + PathVertex.Count);
-            Console.WriteLine("Visited Vertecies: ");
+            Console.WriteLine("Que Number: " + QueNumber);
+            Console.WriteLine("------------------------------------------");
+            Console.WriteLine();
 
             foreach (Vertex vertex in PathVertex)
             {
@@ -553,6 +567,25 @@ namespace Project
 
             // Mark the current node
             visited.Remove(origin);
+        }
+
+        public static void GetMessageDirection(List<Message> messages, List<Edge> edges)
+        {
+            foreach (Message message in messages)
+            {
+                foreach (Edge edge in edges)
+                {
+                    // Flows that are forward will have the the edge as their source
+                    if (edge.Source == message.Source)
+                    {
+                        message.Backwards = false;
+                    }
+                    else if (edge.Destination == message.Source)
+                    {
+                        message.Backwards = true;
+                    }
+                }
+            }
         }
 
         // utility function to check if current vertex is already present in path
@@ -951,7 +984,7 @@ namespace Project
                 case "small":
                     {
                         PATH += "\\Small";
-                        ITERATION_BUFFER = 5555;
+                        ITERATION_BUFFER = 1500;
                         break;
                     }
 
@@ -1015,13 +1048,15 @@ namespace Project
 
             FindAllRoutes(messages, edges, vertices);
 
+            GetMessageDirection(messages, edges);
+
             // Sets up the program by asking what solver method to use.
             string MODE = menuSolution();
             switch (MODE)
             {
                 case "Simmulated Annealing":
                     {
-                        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(messages, vertices, edges, ITERATION_BUFFER, cycle);
+                        SimulatedAnnealing simulatedAnnealing = new SimulatedAnnealing(messages, edges, cycle, ITERATION_BUFFER);
 
                         simulatedAnnealing.Solve();
 
