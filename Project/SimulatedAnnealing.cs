@@ -213,9 +213,9 @@ namespace Project
                 while (edge.BW_Consumption > edge.BW)
                 {
                     CyclicQ();
-
-                    edge.PrintEdgeDetails();
                 }
+
+                edge.PrintEdgeDetails();
             }
 
             Console.WriteLine();
