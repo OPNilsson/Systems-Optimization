@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Project
 {
@@ -181,25 +183,38 @@ namespace Project
 
             E2E = 0;
 
-            QueNumber = 0;
+            QueNumbers = new();
         }
 
         public bool Backwards { get; set; }
         public uint Deadline { get; }
         public Vertex Destination { get; }
         public long E2E { get; set; }
+        public int id { get; set; }
         public String Name { get; }
         public List<Edge> Path { get; set; }
         public List<Vertex> PathVertex { get; set; }
         public uint Period { get; set; }
         public List<List<Edge>> PossiblePaths { get; set; }
         public List<List<Vertex>> PossibleVertexPaths { get; set; }
-        public int QueNumber { get; set; }
+        public List<int> QueNumbers { get; set; }
         public bool Scheduled { get; set; }
 
         public uint Size { get; }
 
         public Vertex Source { get; }
+
+        public static List<Message> GetIDMessages(List<Message> messages)
+        {
+            foreach (Message message in messages)
+            {
+                string numericName = new String(message.Name.Where(Char.IsDigit).ToArray());
+
+                message.id = Int32.Parse(numericName);
+            }
+
+            return messages;
+        }
 
         public void PathToVertexPath()
         {
@@ -252,7 +267,6 @@ namespace Project
             Console.WriteLine("Showing path for message: " + Name);
             Console.WriteLine("Message source to destination: " + Source.Name + " -> " + Destination.Name);
             Console.WriteLine("Total Edges: " + Path.Count);
-            Console.WriteLine("Que Number: " + QueNumber);
             Console.WriteLine("------------------------------------------");
             Console.WriteLine();
 
@@ -322,7 +336,6 @@ namespace Project
             Console.WriteLine("Showing path for message: " + Name);
             Console.WriteLine("Message source to destination: " + Source.Name + " -> " + Destination.Name);
             Console.WriteLine("Total Steps: " + PathVertex.Count);
-            Console.WriteLine("Que Number: " + QueNumber);
             Console.WriteLine("------------------------------------------");
             Console.WriteLine();
 
@@ -359,8 +372,77 @@ namespace Project
 
         public void SetPath(List<Edge> path)
         {
+            int index = 0;
+
+            int number = 0;
+
+            // Remove message from current path Queues
+            if (Path.Count > 0)
+            {
+                foreach (Edge edge in Path)
+                {
+                    if (Backwards)
+                    {
+                        edge.QueueBackwards.Remove(this);
+                    }
+                    else
+                    {
+                        edge.Queue.Remove(this);
+                    }
+
+                    edge.CalculateBW();
+                }
+            }
+
             Path = path;
             PathToVertexPath();
+
+            // Get QueNumbers index ready
+            QueNumbers.Clear();
+            for (int i = 0; i < path.Count; i++)
+            {
+                QueNumbers.Add(-1);
+            }
+
+            // Update the queues on each edge visited
+            foreach (Edge edge in Path)
+            {
+                if (Backwards)
+                {
+                    edge.QueueBackwards.Add(this);
+                    number = edge.QueueBackwards.IndexOf(this);
+                }
+                else
+                {
+                    edge.Queue.Add(this);
+                    number = edge.Queue.IndexOf(this);
+                }
+
+                if (number == 0)
+                {
+                    QueNumbers[index] = 1;
+                }
+                else
+                {
+                    if (number > 3)
+                    {
+                        while (number > 3)
+                        {
+                            number -= 3;
+                        }
+
+                        QueNumbers[index] = number;
+                    }
+                    else
+                    {
+                        QueNumbers[index] = number;
+                    }
+                }
+
+                index++;
+
+                edge.CalculateBW(); // Update the BW_Consumption
+            }
         }
 
         public void VertexPathsToEdgePaths(List<Edge> edges)
@@ -596,6 +678,116 @@ namespace Project
                 if (String.Equals(path[i], v))
                     return false;
             return true;
+        }
+
+        public static void MenuPrintSASolution(String TC, SimulatedAnnealing solution)
+        {
+            bool asking = true;
+
+            Console.WriteLine("---------------------------------------");
+
+            while (asking)
+            {
+                Console.WriteLine();
+                Console.WriteLine("The available options are: ");
+                Console.WriteLine("1) YES");
+                Console.WriteLine("2) NO");
+
+                Console.WriteLine();
+
+                Console.Write("Please Select if you would like to save the solution as an XML: ");
+
+                int response;
+                {
+                    string input;
+
+                    input = Console.ReadLine();
+                    while (!int.TryParse(input, out response))
+                    {
+                        Console.WriteLine("Bad input");
+                        input = Console.ReadLine();
+                    }
+                }
+
+                switch (response)
+                {
+                    case 1:
+                        {
+                            XDocument doc = new XDocument(new XElement("Report"));
+
+                            // Add Solution Element
+                            doc.Root.Add(new XElement("Solution",
+                                new XAttribute("Runtime", (solution.endTime - solution.startTime).TotalSeconds),
+                                new XAttribute("MeanE2E", solution.BestMeanE2E),
+                                new XAttribute("MeanBW", solution.BestMeanBW)
+                                ));
+
+                            foreach (Message message in solution.BestMessages)
+                            {
+                                // Create Message Node
+                                XElement messageNode = new XElement("Message",
+                                    new XAttribute("Name", message.Name),
+                                    new XAttribute("maxE2E", message.E2E)
+                                    );
+
+                                int index = 0;
+
+                                foreach (Edge edge in message.Path)
+                                {
+                                    XElement linkNode;
+
+                                    Vertex source = message.PathVertex[index];
+                                    Vertex destination = message.PathVertex[index + 1];
+
+                                    // Create Link Node for Backward Messages
+                                    linkNode = new XElement("Link",
+                                        new XAttribute("Source", source.Name),
+                                        new XAttribute("Destination", destination.Name),
+                                        new XAttribute("Qnumber", message.QueNumbers[index])
+                                        );
+
+                                    messageNode.Add(linkNode);
+
+                                    index++;
+                                }
+
+                                doc.Root.Add(messageNode);
+                            }
+
+                            // Save the xml with name "Report_TC#.xml"
+                            doc.Save(Directory.GetCurrentDirectory() + "//Report_" + TC + ".xml");
+
+                            Console.WriteLine();
+                            Console.WriteLine();
+                            Console.WriteLine("Document saved to: ");
+                            Console.WriteLine(Directory.GetCurrentDirectory() + "\\Report_" + TC + ".xml");
+
+                            asking = false; // Break the asking loop
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            Console.WriteLine();
+                            Console.Write("No file saved!");
+
+                            asking = false; // Break the asking loop
+                            break;
+                        }
+                    default:
+                        {
+                            Console.Clear();
+                            Console.WriteLine("**********************************************************");
+                            Console.WriteLine("Sorry please select one of the options by entering: 1 | 2");
+                            Console.WriteLine("**********************************************************");
+                            Console.WriteLine();
+
+                            break;
+                        }
+                }
+            }
+
+            Console.WriteLine();
         }
 
         public static string menuSize()
@@ -984,20 +1176,20 @@ namespace Project
                 case "small":
                     {
                         PATH += "\\Small";
-                        ITERATION_BUFFER = 1500;
+                        ITERATION_BUFFER = 1234;
                         break;
                     }
 
                 case "medium":
                     {
                         PATH += "\\Medium";
-                        ITERATION_BUFFER = 1234;
+                        ITERATION_BUFFER = 952;
                         break;
                     }
                 case "large":
                     {
                         PATH += "\\Large";
-                        ITERATION_BUFFER = 1486;
+                        ITERATION_BUFFER = 523;
                         break;
                     }
                 default:
@@ -1060,6 +1252,8 @@ namespace Project
 
                         simulatedAnnealing.Solve();
 
+                        MenuPrintSASolution(TC, simulatedAnnealing);
+
                         break;
                     }
 
@@ -1079,6 +1273,9 @@ namespace Project
                         break;
                     }
             }
+
+            Console.WriteLine("Press ENTER to exit.");
+            Console.ReadLine();
         }
     }
 

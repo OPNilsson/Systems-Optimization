@@ -10,16 +10,19 @@ namespace Project
 {
     internal class SimulatedAnnealing
     {
-        public const int MAX_ITERATIONS = 151000;
-
+        public const int MAX_ITERATIONS = 100000;
         public const int MAX_QUE_COUNT = 3;
         public const double MIN_TEMPERATURE = 0.0001;
-        public long bestMeanBW = 0;
+        public Cycle BestCycle;
+        public List<Edge> BestEdges;
+        public long BestMeanBW = 0;
+        public long BestMeanE2E = 0;
+        public List<Message> BestMessages;
         public DateTime endTime;
         public DateTime startTime;
-        private double coolingRate = 0.9995;
+        public bool TASK_SOLVED;
+        private double coolingRate = 0.832;
         private Cycle Cycle;
-
         private bool debug = true;
 
         private List<Edge> edges;
@@ -37,6 +40,8 @@ namespace Project
             this.Cycle = cycle;
 
             this.startTime = DateTime.Now;
+
+            TASK_SOLVED = false;
         }
 
         public static double acceptingProbability(long MBW, long adjMBW, double temperature)
@@ -69,7 +74,7 @@ namespace Project
             }
         }
 
-        public bool Solve()
+        public void Solve()
         {
             Cycle OriginalCycle = Cycle;
 
@@ -93,7 +98,7 @@ namespace Project
                 // Simulate a Cycle
                 CyclicQ();
 
-                if (Cycle.Cycles.Count() <= Cycle.CycleIndex) return false;
+                if (Cycle.Cycles.Count() <= Cycle.CycleIndex) ;
             }
 
             PrintFindingSolution(true);
@@ -103,15 +108,15 @@ namespace Project
             debug = false;
 
             // Assign Best Solution
-            List<Message> BestMessages = messages;
-            List<Edge> BestEdges = edges;
-            Cycle BestCycle = Cycle;
+            BestMessages = messages;
+            BestEdges = edges;
+            BestCycle = Cycle;
 
             // Assign Best Objective Variable
-            long bestMeanBw = CalculateMeanBW();
+            BestMeanBW = CalculateMeanBW();
 
             // Simmulated Annealing Variables
-            long meanBW = bestMeanBw;
+            long meanBW = BestMeanBW;
             int solutionsFound = 0;
             var random = new Random();
 
@@ -139,14 +144,14 @@ namespace Project
 
                     // Check if new solution is new best. A solution is described to be better in
                     // 4.3 of the project description if the meanBW is lower
-                    if (meanBW_Neighbor < bestMeanBw)
+                    if (meanBW_Neighbor < BestMeanBW)
                     {
                         // Assign Best Solution
                         BestMessages = messages;
                         BestEdges = edges;
                         BestCycle = Cycle;
 
-                        bestMeanBw = meanBW_Neighbor;
+                        BestMeanBW = meanBW_Neighbor;
                     }
 
                     // If neighbor solution is better, accept solution. Otherwise accept with
@@ -174,6 +179,8 @@ namespace Project
                 ++iteration;
             }
 
+            BestMeanE2E = CalculateMeanE2E();
+
             endTime = DateTime.Now;
 
             Console.Clear();
@@ -198,9 +205,12 @@ namespace Project
             Console.WriteLine("Ran for " + (endTime - startTime).TotalMilliseconds + " ms");
             Console.WriteLine("Ran for {0} iterations", iteration);
             Console.WriteLine("Total Solutions found: " + solutionsFound);
-            Console.WriteLine("Solution Cycles: " + BestCycle.CycleIndex);
 
             Console.WriteLine();
+
+            // Sort the messages in order of name
+            Message.GetIDMessages(BestMessages);
+            BestMessages.Sort((x, y) => x.id.CompareTo(y.id));
 
             foreach (Message message in BestMessages)
             {
@@ -221,7 +231,7 @@ namespace Project
             Console.WriteLine();
             Console.WriteLine("Solution Cycles: " + BestCycle.CycleIndex);
 
-            return true;
+            TASK_SOLVED = true;
         }
 
         private bool AllMessagesScheduled()
@@ -352,6 +362,18 @@ namespace Project
             }
 
             return totalBW / edges.Count;
+        }
+
+        private long CalculateMeanE2E()
+        {
+            long totalE2E = 0;
+
+            foreach (Message message in BestMessages)
+            {
+                totalE2E += message.E2E;
+            }
+
+            return totalE2E / BestMessages.Count;
         }
 
         private void CycleDomainTransformation()
@@ -574,23 +596,6 @@ namespace Project
                     {
                         message.SetPath(path);
 
-                        // Update the queues on each edge visited
-                        foreach (Edge edge in message.Path)
-                        {
-                            if (message.Backwards)
-                            {
-                                edge.QueueBackwards.Add(message);
-                                message.QueNumber = edge.QueueBackwards.Count;
-                            }
-                            else
-                            {
-                                edge.Queue.Add(message);
-                                message.QueNumber = edge.Queue.Count;
-                            }
-
-                            edge.CalculateBW(); // Update the BW_Consumption
-                        }
-
                         scheduled++;
                         message.Scheduled = true;
 
@@ -798,12 +803,10 @@ namespace Project
                 if (temp.Backwards)
                 {
                     edge.QueueBackwards.Add(temp);
-                    temp.QueNumber = edge.QueueBackwards.Count;
                 }
                 else
                 {
                     edge.Queue.Add(temp);
-                    temp.QueNumber = edge.Queue.Count;
                 }
 
                 edge.CalculateBW();
@@ -831,39 +834,7 @@ namespace Project
             if (debug) Console.WriteLine("Random Index of path = " + index_path);
             if (debug) Console.WriteLine();
 
-            // Remove the current effect on the network
-            foreach (Edge edge in message.Path)
-            {
-                if (message.Backwards)
-                {
-                    edge.QueueBackwards.Remove(message);
-                }
-                else
-                {
-                    edge.Queue.Remove(message);
-                }
-
-                edge.CalculateBW();
-            }
-
             message.SetPath(message.PossiblePaths[index_path]);
-
-            // Update the effect of the network
-            foreach (Edge edge in message.Path)
-            {
-                if (message.Backwards)
-                {
-                    edge.QueueBackwards.Add(message);
-                    message.QueNumber = edge.QueueBackwards.Count;
-                }
-                else
-                {
-                    edge.Queue.Add(message);
-                    message.QueNumber = edge.Queue.Count;
-                }
-
-                edge.CalculateBW();
-            }
         }
 
         private void PrintFindingSolution(bool found)
@@ -894,13 +865,33 @@ namespace Project
 
             foreach (Message message in messages)
             {
-                if (message.QueNumber <= MAX_QUE_COUNT)
+                if (message.Backwards)
                 {
-                    passed = true;
+                    foreach (Edge edge in message.Path)
+                    {
+                        if (edge.QueueBackwards.Count <= MAX_QUE_COUNT)
+                        {
+                            passed = true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                 }
                 else
                 {
-                    return false;
+                    foreach (Edge edge in message.Path)
+                    {
+                        if (edge.Queue.Count <= MAX_QUE_COUNT)
+                        {
+                            passed = true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
 
