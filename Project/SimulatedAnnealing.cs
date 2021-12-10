@@ -255,21 +255,26 @@ namespace Project
             if (debug) Console.WriteLine();
             if (debug) Console.WriteLine("Finding A of Message " + message.Name + ": ");
 
-            if ((Cycle.Cycles[Cycle.CycleIndex] * Cycle.CycleLength % message.Period) == 0)
+            float x = ((Cycle.CycleIndex - offset) * Cycle.CycleLength) % message.Period;
+
+            if (0 <= x && x < Cycle.CycleLength)
             {
                 if (debug) Console.ForegroundColor = ConsoleColor.DarkGreen;
 
-                if (debug) Console.WriteLine("Result of " + Cycle.Cycles[Cycle.CycleIndex] + " * " + Cycle.CycleLength + " % " + message.Period + " == 0 was TRUE!");
-                if (debug) Console.WriteLine("A = " + (message.Size - offset));
+                if (debug) Console.WriteLine("((" + Cycle.CycleIndex + " - " + offset + ") " + " * " + Cycle.CycleLength + " ) % " + message.Period + " = " + x);
+                if (debug) Console.WriteLine("0  <= " + x + " < " + Cycle.CycleLength + " TRUE!");
+                if (debug) Console.WriteLine("A = " + message.Size);
 
                 if (debug) Console.ForegroundColor = consoleColor;
 
-                return (uint)(message.Size - offset);
+                return message.Size;
             }
             else
             {
                 if (debug) Console.ForegroundColor = ConsoleColor.DarkRed;
-                if (debug) Console.WriteLine("Result of " + Cycle.Cycles[Cycle.CycleIndex] + " * " + Cycle.CycleLength + " % " + message.Period + " == 0 was FASLE!");
+
+                if (debug) Console.WriteLine("((" + Cycle.CycleIndex + " - " + offset + ") " + " * " + Cycle.CycleLength + " ) % " + message.Period + " = " + x);
+                if (debug) Console.WriteLine("0  <= " + x + " < " + Cycle.CycleLength + " FASLE!");
                 if (debug) Console.WriteLine("A = 0");
 
                 if (debug) Console.ForegroundColor = consoleColor;
@@ -656,7 +661,7 @@ namespace Project
                     foreach (Message message in edge.Queue)
                     {
                         q_Num++;
-                        latency += q_Num;
+                        latency += q_Num + (int)edge.PropDelay;
                     }
 
                     q_Num = 0;
@@ -664,7 +669,7 @@ namespace Project
                     foreach (Message message in edge.QueueBackwards)
                     {
                         q_Num++;
-                        latency += q_Num;
+                        latency += q_Num + (int)edge.PropDelay;
                     }
                 }
 
@@ -682,12 +687,12 @@ namespace Project
 
                 foreach (Message message in edge.Queue)
                 {
-                    cBW += ArrivalPattern(message, 0);
+                    cBW += ArrivalPattern(message, edge.Latency);
                 }
 
                 foreach (Message message in edge.QueueBackwards)
                 {
-                    cBW += ArrivalPattern(message, 0);
+                    cBW += ArrivalPattern(message, edge.Latency);
                 }
 
                 edge.BW_Consumption_Cycle = cBW;
