@@ -100,6 +100,7 @@ namespace Project
             this.Source = Source;
             this.Destination = Destination;
 
+            LinkUtilization = new();
             Queue = new();
             QueueBackwards = new();
 
@@ -117,6 +118,7 @@ namespace Project
         public Vertex Destination { get; }
         public String Id { get; }
         public int Latency { get; set; }
+        public List<long> LinkUtilization { get; set; }
         public uint PropDelay { get; set; }
         public List<Message> Queue { get; set; }
         public List<Message> QueueBackwards { get; set; }
@@ -191,6 +193,7 @@ namespace Project
         public Vertex Destination { get; }
         public long E2E { get; set; }
         public int id { get; set; }
+
         public String Name { get; }
         public List<Edge> Path { get; set; }
         public List<Vertex> PathVertex { get; set; }

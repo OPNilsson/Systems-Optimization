@@ -10,7 +10,7 @@ namespace Project
 {
     internal class SimulatedAnnealing
     {
-        public const int MAX_ITERATIONS = 50000;
+        public const int MAX_ITERATIONS = 100000;
         public const int MAX_QUE_COUNT = 3;
         public const double MIN_TEMPERATURE = 0.0001;
         public Cycle BestCycle;
@@ -23,7 +23,7 @@ namespace Project
         public bool TASK_SOLVED;
         private double coolingRate = 0.732;
         private Cycle Cycle;
-        private bool debug = true;
+        private bool debug = false;
 
         private List<Edge> edges;
 
@@ -103,8 +103,6 @@ namespace Project
             PrintFindingSolution(true);
 
             Console.WriteLine("Cycles for solution: " + Cycle.CycleIndex);
-
-            debug = false;
 
             // Assign Best Solution
             BestMessages = messages;
@@ -397,6 +395,7 @@ namespace Project
         private void CyclicQ()
         {
             Cycle.CycleIndex++;
+            iteration++;
 
             if (Cycle.Cycles.Count() >= Cycle.CycleIndex)
             {
@@ -696,6 +695,7 @@ namespace Project
                 }
 
                 edge.BW_Consumption_Cycle = cBW;
+                edge.LinkUtilization.Add(cBW);
 
                 if (debug) Console.WriteLine("ConsumedBW for Edge " + edge.Id + ": " + cBW);
             }
