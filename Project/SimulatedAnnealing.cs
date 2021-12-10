@@ -10,7 +10,7 @@ namespace Project
 {
     internal class SimulatedAnnealing
     {
-        public const int MAX_ITERATIONS = 100000;
+        public const int MAX_ITERATIONS = 50000;
         public const int MAX_QUE_COUNT = 3;
         public const double MIN_TEMPERATURE = 0.0001;
         public Cycle BestCycle;
@@ -21,7 +21,7 @@ namespace Project
         public DateTime endTime;
         public DateTime startTime;
         public bool TASK_SOLVED;
-        private double coolingRate = 0.832;
+        private double coolingRate = 0.732;
         private Cycle Cycle;
         private bool debug = true;
 
@@ -38,8 +38,6 @@ namespace Project
             this.edges = edges;
             this.ITERATION_BUFFER = ITERATION_BUFFER;
             this.Cycle = cycle;
-
-            this.startTime = DateTime.Now;
 
             TASK_SOLVED = false;
         }
@@ -60,7 +58,7 @@ namespace Project
             PickNewPath();
 
             // If not all messages reach deadline try and simulate another que cycle
-            while (!DeadlineConstraint() || !LinkCapactiyConstraint())
+            while (!DeadlineConstraint() || !LinkCapactiyConstraint() || !QueMax())
             {
                 // Print a dot to show that the iteration is working
                 //if (Cycle.CycleIndex % 100 == 0) Console.Write(" .");
@@ -69,13 +67,16 @@ namespace Project
                 CyclicQ();
 
                 if (Cycle.Cycles.Count() <= Cycle.CycleIndex) break;
-
-                if (AllMessagesScheduled()) break;
             }
         }
 
         public void Solve()
         {
+            startTime = DateTime.Now;
+
+            // Save Originals to come up with a new solution during Algorithim execution
+            List<Message> OriginalMessages = messages;
+            List<Edge> OriginalEdges = edges;
             Cycle OriginalCycle = Cycle;
 
             PrintFindingSolution(false);
@@ -97,8 +98,6 @@ namespace Project
 
                 // Simulate a Cycle
                 CyclicQ();
-
-                if (Cycle.Cycles.Count() <= Cycle.CycleIndex) ;
             }
 
             PrintFindingSolution(true);
@@ -120,10 +119,6 @@ namespace Project
             int solutionsFound = 0;
             var random = new Random();
 
-            // Save Originals to come up with a new solution during Algorithim execution
-            List<Message> OriginalMessages = messages;
-            List<Edge> OriginalEdges = edges;
-
             // Start of Simmulated Annealing Algorithim
             while (iteration < MAX_ITERATIONS && temperature > MIN_TEMPERATURE)
             {
@@ -135,7 +130,7 @@ namespace Project
 
                 // Uses the constraints for a solution as described in sections 4.0-4.2 of the
                 // project description
-                if (LinkCapactiyConstraint() && DeadlineConstraint() && AllMessagesScheduled() && QueMax())
+                if (LinkCapactiyConstraint() && DeadlineConstraint() && QueMax())
                 {
                     ++solutionsFound;
 
@@ -160,10 +155,6 @@ namespace Project
                     if (acceptingProbability(meanBW, meanBW_Neighbor, temperature) > p)
                     {
                         meanBW = meanBW_Neighbor;
-
-                        OriginalCycle = Cycle;
-                        OriginalEdges = edges;
-                        OriginalMessages = messages;
                     }
 
                     // End Iteration by cooling
@@ -172,8 +163,6 @@ namespace Project
                 else
                 {
                     Cycle = OriginalCycle;
-                    edges = OriginalEdges;
-                    messages = OriginalMessages;
                 }
 
                 ++iteration;
@@ -354,12 +343,22 @@ namespace Project
 
         private long CalculateMeanBW()
         {
-            uint totalBW = 0;
+            long totalBW = 0;
+            List<long> consumedBW = new();
 
             foreach (Edge edge in edges)
             {
-                totalBW += edge.BW_Consumption;
+                long x = (edge.BW / edge.BW_Cylce_Transfer_Capacity);
+
+                consumedBW.Add(x);
             }
+
+            foreach (long x in consumedBW)
+            {
+                totalBW += x;
+            }
+
+            totalBW *= 3;
 
             return totalBW / edges.Count;
         }
@@ -403,6 +402,8 @@ namespace Project
                         edge.Queue.Remove(edge.Queue[0]);
 
                         edge.CalculateBW(); // Update the BW_Consumption
+
+                        break;
                     }
 
                     if (edge.QueueBackwards.Count > 0)
@@ -410,6 +411,8 @@ namespace Project
                         edge.QueueBackwards.Remove(edge.QueueBackwards[0]);
 
                         edge.CalculateBW(); // Update the BW_Consumption
+
+                        break;
                     }
                 }
             }
@@ -697,7 +700,7 @@ namespace Project
 
             foreach (Edge edge in edges)
             {
-                // BW_Cycle_Transfer is in Bytes while BW_Comsumption is in bits
+                // BW_Cycle_Transfer is in MBytes while BW_Comsumption is in bits
                 if (edge.BW_Consumption_Cycle <= edge.BW_Cylce_Transfer_Capacity * 125000)
                 {
                     if (debug) Console.ForegroundColor = ConsoleColor.DarkGreen;
@@ -834,7 +837,30 @@ namespace Project
             if (debug) Console.WriteLine("Random Index of path = " + index_path);
             if (debug) Console.WriteLine();
 
+            if (debug) message.PrintPath();
+
+            foreach (Edge edge in edges)
+            {
+                edge.Queue.Remove(message);
+                edge.QueueBackwards.Remove(message);
+            }
+
             message.SetPath(message.PossiblePaths[index_path]);
+
+            foreach (Edge edge in message.Path)
+            {
+                if (message.Backwards)
+                {
+                    edge.QueueBackwards.Add(message);
+                }
+                else
+                {
+                    edge.Queue.Add(message);
+                }
+            }
+
+            if (debug) message.PrintPath();
+            Console.ForegroundColor = consoleColor;
         }
 
         private void PrintFindingSolution(bool found)

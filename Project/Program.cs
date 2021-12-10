@@ -410,34 +410,21 @@ namespace Project
                 if (Backwards)
                 {
                     edge.QueueBackwards.Add(this);
-                    number = edge.QueueBackwards.IndexOf(this);
+                    number = edge.QueueBackwards.IndexOf(this) + 1;
                 }
                 else
                 {
                     edge.Queue.Add(this);
-                    number = edge.Queue.IndexOf(this);
+                    number = edge.Queue.IndexOf(this) + 1;
                 }
 
-                if (number == 0)
+                if (number > 3)
                 {
-                    QueNumbers[index] = 1;
+                    Random rnd = new Random();
+                    number = rnd.Next(2, 3);
                 }
-                else
-                {
-                    if (number > 3)
-                    {
-                        while (number > 3)
-                        {
-                            number -= 3;
-                        }
 
-                        QueNumbers[index] = number;
-                    }
-                    else
-                    {
-                        QueNumbers[index] = number;
-                    }
-                }
+                QueNumbers[index] = number;
 
                 index++;
 
